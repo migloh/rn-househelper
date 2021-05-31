@@ -1,7 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
-import {
-  BackHandler,
-} from 'react-native';
+import React from 'react';
 import Locations from './signedin/Locations';
 import Users from './signedin/Users';
 import Messages from './signedin/Messages';
@@ -27,20 +24,6 @@ type BottomTabParamList = {
 const Tabs = createBottomTabNavigator<BottomTabParamList>();
 
 export default function Home() {
-  useEffect(() => {
-    const backAction = () => {
-      BackHandler.exitApp();
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
-
   return (
     <Tabs.Navigator>
       <Tabs.Screen name={enumTabs.Locations} component={Locations} />

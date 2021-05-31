@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  StatusBar,
-  BackHandler
+  StatusBar
 } from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHome } from '@fortawesome/free-solid-svg-icons'
@@ -13,19 +12,6 @@ import { Routes, WelcomeProps } from './Routes';
 import { Blues, Grays } from './Colors';
 
 export default function Welcome({route, navigation}: WelcomeProps) {
-  useEffect(() => {
-    const backAction = () => {
-      BackHandler.exitApp();
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor='black' />

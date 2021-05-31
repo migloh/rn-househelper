@@ -17,9 +17,11 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCoffee, faChevronLeft, faAppleAlt} from '@fortawesome/free-solid-svg-icons'
 import { API_GEO, baseUrl, hostUrl } from '../../notgood/geocodingAPI';
+import {AuthContext} from '../../App';
 
 
 export default function Profile({route, navigation}: HomeProps) {
+  const { globalDispatch } = React.useContext(AuthContext);
   // const [stt, setStt] = useState<boolean>(false);  const [addObj, setAddObj] = useState<object>({});
   // const addQuery = async ( adrs: string ) => { 
   //   const dataInput = {
@@ -47,7 +49,9 @@ export default function Profile({route, navigation}: HomeProps) {
         let response = await auth()
           .signOut()
           .then(() => Alert.alert("Success", "Signed out"));
-        navigation.navigate(Routes.Welcome);
+          if(globalDispatch)
+            globalDispatch({type: 'SIGN_OUT'});
+        // navigation.navigate(Routes.Welcome);
     } catch (e){
       console.error(e.message);
     }

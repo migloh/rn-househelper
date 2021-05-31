@@ -14,6 +14,7 @@ import { faCoffee,faChevronLeft, faAppleAlt } from '@fortawesome/free-solid-svg-
 import {Blues, Grays} from './Colors';
 import {LoginProps, Routes} from './Routes';
 import auth from '@react-native-firebase/auth'; 
+import {AuthContext} from '../App';
 
 export default function Login({route, navigation}: LoginProps) {
   const [mail, setMail] = useState<string>('');
@@ -21,6 +22,7 @@ export default function Login({route, navigation}: LoginProps) {
   const [inputBorder1, setInputBorder1] = useState<boolean>(false);
   const [inputBorder2, setInputBorder2] = useState<boolean>(false);
   const passInputRef = useRef<TextInput>(null);
+  const { globalDispatch } = React.useContext(AuthContext);
 
   const __doSignIn = async (lmeo: string, pwd: string) => {
     try {
@@ -30,8 +32,10 @@ export default function Login({route, navigation}: LoginProps) {
         )
       if (response && response.user) {
         Alert.alert("Success", "Logged in successfully");
-        navigation.navigate(Routes.Home);
-        console.log(response)
+        // navigation.navigate(Routes.Home);
+        console.log(response);
+        if(globalDispatch)
+          globalDispatch({type: 'SIGN_IN', token: auth().currentUser?.uid});
       }
     } catch (e) {
       // console.error(e.message)
