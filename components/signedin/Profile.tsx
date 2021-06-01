@@ -21,7 +21,7 @@ import {AuthContext} from '../../App';
 
 
 export default function Profile({route, navigation}: HomeProps) {
-  const { globalDispatch } = React.useContext(AuthContext);
+  const { signOut } = React.useContext(AuthContext);
   // const [stt, setStt] = useState<boolean>(false);  const [addObj, setAddObj] = useState<object>({});
   // const addQuery = async ( adrs: string ) => { 
   //   const dataInput = {
@@ -49,8 +49,7 @@ export default function Profile({route, navigation}: HomeProps) {
         let response = await auth()
           .signOut()
           .then(() => Alert.alert("Success", "Signed out"));
-          if(globalDispatch)
-            globalDispatch({type: 'SIGN_OUT'});
+          if(signOut) signOut;
         // navigation.navigate(Routes.Welcome);
     } catch (e){
       console.error(e.message);

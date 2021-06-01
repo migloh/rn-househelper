@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext, useReducer, Dispatch } from 'react';
+import React, { useState, useEffect, createContext, useContext, useReducer, Dispatch, useMemo } from 'react';
 import LoadingScreen from './components/LoadingScreen';
 import Welcome from './components/Welcome';
 import SignupCheck from './components/SignupCheck';
@@ -13,8 +13,10 @@ import SplashScreen from 'react-native-splash-screen';
 
 
 type GlobalContext = {
-  globalState: any,
-  globalDispatch: Dispatch<any>
+  // globalState: any,
+  // globalDispatch: Dispatch<any>
+  signIn: () => void,
+  signOut: () => void
 }
 
 export const AuthContext = React.createContext<Partial<GlobalContext>>({});
@@ -67,13 +69,22 @@ export default function App() {
     bootstrapAsync();
   }, []);
 
+  const globalContext = useMemo(
+    () => ({
+      signIn: () => dispatch({type: 'SIGN_IN', token: auth().currentUser?.uid}),
+      signOut: () => dispatch({type: 'SIGN_OUT'})
+    }),
+    []
+  );
+
   useEffect(() => SplashScreen.hide());
   return (
     <AuthContext.Provider 
-      value={{
-        globalState: state,
-        globalDispatch: dispatch
-      }}
+      // value={{
+      //   globalState: state,
+      //   globalDispatch: dispatch
+      // }}
+      value={globalContext}
     >
       <NavigationContainer>
         <Stack.Navigator

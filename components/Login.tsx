@@ -22,7 +22,7 @@ export default function Login({route, navigation}: LoginProps) {
   const [inputBorder1, setInputBorder1] = useState<boolean>(false);
   const [inputBorder2, setInputBorder2] = useState<boolean>(false);
   const passInputRef = useRef<TextInput>(null);
-  const { globalDispatch } = React.useContext(AuthContext);
+  const { signIn } = React.useContext(AuthContext);
 
   const __doSignIn = async (lmeo: string, pwd: string) => {
     try {
@@ -34,8 +34,7 @@ export default function Login({route, navigation}: LoginProps) {
         Alert.alert("Success", "Logged in successfully");
         // navigation.navigate(Routes.Home);
         console.log(response);
-        if(globalDispatch)
-          globalDispatch({type: 'SIGN_IN', token: auth().currentUser?.uid});
+        if(signIn) signIn;
       }
     } catch (e) {
       // console.error(e.message)
