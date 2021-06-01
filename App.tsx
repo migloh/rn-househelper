@@ -1,4 +1,5 @@
 import React, { useState, useEffect, createContext, useContext, useReducer, Dispatch } from 'react';
+import LoadingScreen from './components/LoadingScreen';
 import Welcome from './components/Welcome';
 import SignupCheck from './components/SignupCheck';
 import Signup from './components/Signup';
@@ -9,6 +10,7 @@ import { Routes, RootStackParamList } from './components/Routes';
 import Home from './components/Home';
 import auth from '@react-native-firebase/auth';
 import SplashScreen from 'react-native-splash-screen';
+
 
 type GlobalContext = {
   globalState: any,
@@ -28,6 +30,7 @@ export default function App() {
           return {
             ...prevState,
             userToken: action.token,
+            isLoading: false
           };
         case 'SIGN_IN':
           return {
@@ -43,7 +46,8 @@ export default function App() {
           };
       }
     },
-    {
+    { 
+      isLoading: true,
       isSignout: false,
       userToken: null,
     }
@@ -78,14 +82,16 @@ export default function App() {
           }}
         >
           {
-            state.userToken == null
+            state.isLoading ? (
+              <Stack.Screen name={Routes.LoadingScreen} component={LoadingScreen} />
+            ) : state.userToken == null
             ? (
               <>
                 <Stack.Screen 
                   name={Routes.Welcome} 
                   component={Welcome} 
                   options={{
-                    animationTypeForReplace: state.isSignout ? 'pop' : 'push',
+                    animationTypeForReplace: state.isSignout ? 'pop' : 'push'
                   }}  
                 />
                 <Stack.Screen name={Routes.SignupCheck} component={SignupCheck} />

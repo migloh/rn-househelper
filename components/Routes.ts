@@ -2,6 +2,7 @@ import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 export enum Routes {
+  LoadingScreen = "LoadingScreen",
   Welcome = "Welcome",
   SignupCheck = "SignupCheck",
   Signup = "Signup",
@@ -10,6 +11,7 @@ export enum Routes {
 }
 
 export type RootStackParamList = {
+  [Routes.LoadingScreen]: undefined,
   [Routes.Welcome]: undefined,
   [Routes.SignupCheck]: undefined,
   [Routes.Signup]: undefined,
@@ -17,12 +19,17 @@ export type RootStackParamList = {
   [Routes.Home]: undefined
 };
 
+type LoadingScreenRouteProp = RouteProp<RootStackParamList, Routes.LoadingScreen>;
 type WelcomeScreenRouteProp = RouteProp<RootStackParamList, Routes.Welcome>;
 type SignupCheckScreenRouteProp = RouteProp<RootStackParamList, Routes.SignupCheck>;
 type SignupScreenRouteProp = RouteProp<RootStackParamList, Routes.Signup>;
 type LoginScreenRouteProp = RouteProp<RootStackParamList, Routes.Login>;
 type HomeScreenRouteProp = RouteProp<RootStackParamList, Routes.Home>;
 
+type LoadingScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  Routes.LoadingScreen
+>;
 type WelcomeScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   Routes.Welcome
@@ -44,6 +51,10 @@ type HomeScreenNavigationProp = StackNavigationProp<
   Routes.Home
 >;
 
+export type LoadingScreenProps = {
+  route: LoadingScreenRouteProp;
+  navigation: LoadingScreenNavigationProp;
+};
 export type WelcomeProps = {
   route: WelcomeScreenRouteProp;
   navigation: WelcomeScreenNavigationProp;
