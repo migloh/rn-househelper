@@ -11,7 +11,7 @@ import {
   ScrollView
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import {HomeProps, Routes} from '../Routes';
+// import {HomeProps} from '../Routes';
 import {Blues, Grays, inBlack} from '../Colors';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -20,7 +20,7 @@ import { API_GEO, baseUrl, hostUrl } from '../../notgood/geocodingAPI';
 import {AuthContext} from '../../App';
 
 
-export default function Profile({route, navigation}: HomeProps) {
+export default function Profile() {
   const { signOut } = React.useContext(AuthContext);
   // const [stt, setStt] = useState<boolean>(false);  const [addObj, setAddObj] = useState<object>({});
   // const addQuery = async ( adrs: string ) => { 

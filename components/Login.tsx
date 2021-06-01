@@ -12,7 +12,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCoffee,faChevronLeft, faAppleAlt } from '@fortawesome/free-solid-svg-icons';
 import {Blues, Grays} from './Colors';
-import {LoginProps, Routes} from './Routes';
+import {LoginProps, AuthRoutes} from './Routes';
 import auth from '@react-native-firebase/auth'; 
 import {AuthContext} from '../App';
 
@@ -22,7 +22,7 @@ export default function Login({route, navigation}: LoginProps) {
   const [inputBorder1, setInputBorder1] = useState<boolean>(false);
   const [inputBorder2, setInputBorder2] = useState<boolean>(false);
   const passInputRef = useRef<TextInput>(null);
-  const { signIn } = React.useContext(AuthContext);
+  const {signIn} = React.useContext(AuthContext);
 
   const __doSignIn = async (lmeo: string, pwd: string) => {
     try {
@@ -105,7 +105,7 @@ export default function Login({route, navigation}: LoginProps) {
           <View style={styles.lowerLine}>
             <Text style={{color: Grays.gray_0}}>Don't have an account?</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate(Routes.Signup)}
+              onPress={() => navigation.navigate(AuthRoutes.Signup)}
             >
               <Text style={{color: 'white'}}> Sign up</Text>
             </TouchableOpacity>

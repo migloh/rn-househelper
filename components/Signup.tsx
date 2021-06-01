@@ -11,7 +11,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCoffee, faChevronLeft, faAppleAlt} from '@fortawesome/free-solid-svg-icons'
 import {Blues, Grays} from './Colors';
-import {Routes, SignupProps} from './Routes';
+import {AuthRoutes, SignupProps} from './Routes';
 import { TextInput } from 'react-native-gesture-handler';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -39,7 +39,7 @@ export default function Signup({route, navigation}: SignupProps) {
           email: lmail
         })
         .then(() => console.log('ok created'))
-        navigation.navigate(Routes.Login);
+        navigation.navigate(AuthRoutes.Login);
       }
     } catch (e) {
       // console.error(e.message);
@@ -119,7 +119,7 @@ export default function Signup({route, navigation}: SignupProps) {
           <View style={styles.lowerLine}>
             <Text style={{color: Grays.gray_0}}>Already have an account?</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate(Routes.Login)}
+              onPress={() => navigation.navigate(AuthRoutes.Login)}
             >
               <Text style={{color: 'white'}}> Log in</Text>
             </TouchableOpacity>

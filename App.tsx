@@ -1,20 +1,20 @@
 import React, { useState, useEffect, createContext, useContext, useReducer, Dispatch, useMemo } from 'react';
 import LoadingScreen from './components/LoadingScreen';
+import AuthScreens from './components/AuthScreens';
 import Welcome from './components/Welcome';
 import SignupCheck from './components/SignupCheck';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Routes, RootStackParamList } from './components/Routes';
+import { AppRoutes, AppStackParamList, HomeRoutes } from './components/Routes';
 import Home from './components/Home';
+import HomeStack from './components/HomeStack';
 import auth from '@react-native-firebase/auth';
 import SplashScreen from 'react-native-splash-screen';
 
 
 type GlobalContext = {
-  // globalState: any,
-  // globalDispatch: Dispatch<any>
   signIn: () => void,
   signOut: () => void
 }
@@ -22,7 +22,7 @@ type GlobalContext = {
 export const AuthContext = React.createContext<Partial<GlobalContext>>({});
 
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator<AppStackParamList>();
 
 export default function App() {
   const [state, dispatch] = React.useReducer(
@@ -74,16 +74,12 @@ export default function App() {
       signIn: () => dispatch({type: 'SIGN_IN', token: auth().currentUser?.uid}),
       signOut: () => dispatch({type: 'SIGN_OUT'})
     }),
-    []
+    [state, dispatch]
   );
 
   useEffect(() => SplashScreen.hide());
   return (
     <AuthContext.Provider 
-      // value={{
-      //   globalState: state,
-      //   globalDispatch: dispatch
-      // }}
       value={globalContext}
     >
       <NavigationContainer>
@@ -94,26 +90,19 @@ export default function App() {
         >
           {
             state.isLoading ? (
-              <Stack.Screen name={Routes.LoadingScreen} component={LoadingScreen} />
+              <Stack.Screen name={AppRoutes.LoadingScreen} component={LoadingScreen} />
             ) : state.userToken == null
             ? (
-              <>
-                <Stack.Screen 
-                  name={Routes.Welcome} 
-                  component={Welcome} 
-                  options={{
-                    animationTypeForReplace: state.isSignout ? 'pop' : 'push'
-                  }}  
-                />
-                <Stack.Screen name={Routes.SignupCheck} component={SignupCheck} />
-                <Stack.Screen name={Routes.Signup} component={Signup} />
-                <Stack.Screen name={Routes.Login} component={Login} />
-              </>
+              <Stack.Screen
+                name={AppRoutes.AuthScreens} 
+                component={AuthScreens} 
+                options={{
+                  animationTypeForReplace: state.isSignout ? 'pop' : 'push'
+                }} 
+              />
             ) 
             : (
-              <>
-                <Stack.Screen name={Routes.Home} component={Home} />
-              </>
+              <Stack.Screen name={AppRoutes.HomeStack} component={HomeStack} />
             )
           }
         </Stack.Navigator>

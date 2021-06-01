@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHome } from '@fortawesome/free-solid-svg-icons'
-import { Routes, WelcomeProps } from './Routes';
+import { AuthRoutes, WelcomeProps } from './Routes';
 import { Blues, Grays } from './Colors';
 
 export default function Welcome({route, navigation}: WelcomeProps) {
@@ -22,14 +22,14 @@ export default function Welcome({route, navigation}: WelcomeProps) {
       <FontAwesomeIcon style={styles.mainIcon} icon={faHome} size={200} color={Blues.blue_0} />
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => navigation.navigate(Routes.SignupCheck)}
+        onPress={() => navigation.navigate(AuthRoutes.Signup)}
         >
         <Text style={styles.buttonText}>Get started</Text>
       </TouchableOpacity>
       <View style={styles.lowerLine}>
         <Text style={{color: Grays.gray_0}}>Already have an account?</Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate(Routes.Login)}
+          onPress={() => navigation.navigate(AuthRoutes.Login)}
         >
           <Text style={{color: 'white'}}> Log in</Text>
         </TouchableOpacity>
