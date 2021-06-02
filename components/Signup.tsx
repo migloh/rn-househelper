@@ -15,6 +15,8 @@ import {AuthRoutes, SignupProps} from './Routes';
 import { TextInput } from 'react-native-gesture-handler';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function Signup({route, navigation}: SignupProps) {
   const [mail, setMail] = useState<string>('');
@@ -64,10 +66,18 @@ export default function Signup({route, navigation}: SignupProps) {
           <Text style={{color: Grays.gray_0}}>Sign up with one of following options</Text>
           <View style={styles.signinOptions}>
             <TouchableOpacity style={styles.signinOptionButton}>
-              <FontAwesomeIcon icon={faCoffee} size={24} color='white' />
+              <FontAwesome5 name={'google'} size={24} color="white" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.signinOptionButton}>
-              <FontAwesomeIcon icon={faAppleAlt} size={24} color='white' />
+              <FontAwesome5 name={'apple'} size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.lowerLine}>
+            <Text style={{color: Grays.gray_0}}>Already have an account?</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate(AuthRoutes.Login)}
+            >
+              <Text style={styles.actionText}> Log in</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.inputTitle}>Name</Text>
@@ -116,14 +126,6 @@ export default function Signup({route, navigation}: SignupProps) {
           >
             <Text style={styles.buttonText}>Create Account</Text>
           </TouchableOpacity>
-          <View style={styles.lowerLine}>
-            <Text style={{color: Grays.gray_0}}>Already have an account?</Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate(AuthRoutes.Login)}
-            >
-              <Text style={{color: 'white'}}> Log in</Text>
-            </TouchableOpacity>
-          </View>
         </ScrollView>
       </View>
     </View>
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     justifyContent: 'space-between', 
     marginTop: 15, 
-    marginBottom: 35
+    marginBottom: 15
   },
   signinOptionButton: {
     borderWidth: 1,
@@ -217,6 +219,11 @@ const styles = StyleSheet.create({
   lowerLine: {
     marginTop: 5,
     flexDirection: 'row',
-    alignSelf: 'center'
+    alignSelf: 'center',
+    marginBottom: 20
+  },
+  actionText: {
+    color: 'white',
+    fontWeight: 'bold'
   }
 });

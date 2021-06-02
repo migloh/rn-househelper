@@ -31,7 +31,7 @@ export default function Welcome({route, navigation}: WelcomeProps) {
         <TouchableOpacity
           onPress={() => navigation.navigate(AuthRoutes.Login)}
         >
-          <Text style={{color: 'white'}}> Log in</Text>
+          <Text style={styles.actionText}> Log in</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -65,5 +65,9 @@ const styles = StyleSheet.create({
   },
   lowerLine: {
     flexDirection: 'row'
+  },
+  actionText: {
+    color: 'white',
+    fontWeight: 'bold'
   }
 });

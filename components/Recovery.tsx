@@ -3,17 +3,18 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  TextInput,
+  Alert
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCaretDown, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
-import ModalDropdown from 'react-native-modal-dropdown';
-import {Routes, SignupCheckProps} from './Routes';
+import { RecoveryProps } from './Routes';
 import {Blues, Grays} from './Colors';
 
-export default function SignupCheck({route, navigation}: SignupCheckProps) {
-  const [str, setStr] = useState<string>('khum');
-  const lmao = ['Seek for a househelper', 'Be a househelper'];
+export default function Recovery({route, navigation}: RecoveryProps) {
+  const [mail, setMail] = useState<string>('');
+  const [inputBorder1, setInputBorder1] = useState<boolean>(false);
   return (
     <View style={styles.container}>
       <View style={styles.upperBar}>
@@ -23,31 +24,29 @@ export default function SignupCheck({route, navigation}: SignupCheckProps) {
         >
           <FontAwesomeIcon icon={faChevronLeft} color="white" size={20}/>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Sign Up</Text>
+        <Text style={styles.headerTitle}>Recovery</Text>
       </View>
       <View style={styles.lowerSpace}>
-        <Text style={styles.asking}>What do you want?</Text>
-        <View style={styles.dropdownOuter}>
-          <ModalDropdown 
-            style={{width: 250}}
-            textStyle={{fontSize: 16, color: 'white'}}
-            dropdownStyle={{width: "80%", borderRadius: 15}} 
-            dropdownTextStyle={{fontSize: 16}}
-            options={lmao}
-            animated={false}
-            defaultValue="I want to ..."
-            onSelect={(num) => {
-              setStr(lmao[num]);
-              // console.log(str);
-            }}
+        <Text style={styles.askingText}>To recover your password, enter an email address that is associated with your account</Text>
+        <Text style={styles.inputTitle}>Your email address</Text>
+        <View style={[styles.inputArea, {borderColor: inputBorder1 == true ? Blues.blue_2 : Grays.gray_2 }]}>
+          <TextInput 
+            style={styles.textInput}
+            placeholder= "tim@apple.com"
+            onFocus={() => setInputBorder1(true)}
+            onBlur={() => setInputBorder1(false)}
+            returnKeyType="next"
+            blurOnSubmit={false}
+            placeholderTextColor={Grays.gray_0}
+            value={mail}
+            onChangeText={setMail}
           />
-          <FontAwesomeIcon icon={faCaretDown} />
         </View>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate(Routes.Signup)}
+          onPress={() => Alert.alert("Sent", "Please check your mail")}
         >
-          <Text style={styles.buttonText}>Next</Text>
+          <Text style={styles.buttonText}>Proceed</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -81,24 +80,37 @@ const styles = StyleSheet.create({
   },
   lowerSpace: {
     paddingHorizontal: 20, 
-    justifyContent: 'center' ,
+    justifyContent: 'center',
     flex: 1
   },
-  asking: {
-    marginLeft: 10,
-    color: 'white'
+  askingText: {
+    color: 'white', 
+    textAlign: 'center', 
+    fontSize: 15, 
+    width: '80%', 
+    marginBottom: '15%',
+    alignSelf: 'center'
   },
-  dropdownOuter: {
-    height: 60,
-    width: "100%",
-    borderWidth: 2,
-    borderColor: Blues.blue_2,
+  inputTitle: {
+    color: 'white',
+    marginLeft: 10
+  },
+  textInput: {
+    color: 'white',
+    width: "100%"
+  },
+  inputArea: {
+    borderWidth: 1,
     borderRadius: 15,
+    marginTop: 5,
+    marginBottom: 20,
+    width: "100%",
+    height: 60,
+    borderColor: Grays.gray_2,
+    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-    marginVertical: 10,
-    flexDirection: 'row',
-    alignItems: 'center'
+    backgroundColor: Grays.gray_button
   },
   button: {
     width: "100%",

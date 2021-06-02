@@ -17,7 +17,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCoffee, faChevronLeft, faAppleAlt} from '@fortawesome/free-solid-svg-icons'
 import { API_GEO, baseUrl, hostUrl } from '../../notgood/geocodingAPI';
-import {AuthContext} from '../../App';
+import {AuthContext} from '../context';
 
 
 export default function Profile() {
@@ -48,11 +48,9 @@ export default function Profile() {
     try{
         let response = await auth()
           .signOut()
-          .then(() => Alert.alert("Success", "Signed out"));
-          if(signOut) signOut;
-        // navigation.navigate(Routes.Welcome);
+          .then(() => signOut && signOut());
     } catch (e){
-      console.error(e.message);
+      console.log(e.message);
     }
   }
 

@@ -14,7 +14,9 @@ import { faCoffee,faChevronLeft, faAppleAlt } from '@fortawesome/free-solid-svg-
 import {Blues, Grays} from './Colors';
 import {LoginProps, AuthRoutes} from './Routes';
 import auth from '@react-native-firebase/auth'; 
-import {AuthContext} from '../App';
+import {AuthContext} from './context';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function Login({route, navigation}: LoginProps) {
   const [mail, setMail] = useState<string>('');
@@ -31,13 +33,10 @@ export default function Login({route, navigation}: LoginProps) {
         pwd
         )
       if (response && response.user) {
-        Alert.alert("Success", "Logged in successfully");
-        // navigation.navigate(Routes.Home);
         console.log(response);
-        if(signIn) signIn;
+        if(signIn) signIn();
       }
     } catch (e) {
-      // console.error(e.message)
       Alert.alert("Warning", e.message);
     }
   }
@@ -58,10 +57,18 @@ export default function Login({route, navigation}: LoginProps) {
           <Text style={{color: Grays.gray_0}}>Log in with one of following options</Text>
           <View style={styles.signinOptions}>
             <TouchableOpacity style={styles.signinOptionButton}>
-              <FontAwesomeIcon icon={faCoffee} size={24} color='white' />
+              <FontAwesome5 name={'google'} size={24} color="white" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.signinOptionButton}>
-              <FontAwesomeIcon icon={faAppleAlt} size={24} color='white' />
+              <FontAwesome5 name={'apple'} size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.lowerLine}>
+            <Text style={{color: Grays.gray_0}}>Already have an account?</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate(AuthRoutes.Login)}
+            >
+              <Text style={styles.actionText}> Log in</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.inputTitle}>Email</Text>
@@ -103,11 +110,11 @@ export default function Login({route, navigation}: LoginProps) {
             <Text style={styles.buttonText}>Log in</Text>
           </TouchableOpacity>
           <View style={styles.lowerLine}>
-            <Text style={{color: Grays.gray_0}}>Don't have an account?</Text>
+            <Text style={{color: Grays.gray_0}}>Forgot password?</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate(AuthRoutes.Signup)}
+              onPress={() => navigation.navigate(AuthRoutes.Recovery)}
             >
-              <Text style={{color: 'white'}}> Sign up</Text>
+              <Text style={styles.actionText}> Password recovery</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -153,7 +160,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     justifyContent: 'space-between', 
     marginTop: 15, 
-    marginBottom: 35
+    marginBottom: 15
   },
   signinOptionButton: {
     borderWidth: 1,
@@ -204,5 +211,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
     flexDirection: 'row',
     alignSelf: 'center',
+    marginBottom: 20
+  },
+  actionText: {
+    color: 'white',
+    fontWeight: 'bold'
   }
 });
