@@ -23,9 +23,8 @@ export default function Messages() {
             selectedValue={selectedLanguage}
             style={{color: 'white'}}
             dropdownIconColor="white"
-            onValueChange={(itemValue) =>
-              setSelectedLanguage(itemValue)
-            }>
+            onValueChange={setSelectedLanguage}
+          >
             <Picker.Item label="Java" value="java" />
             <Picker.Item label="JavaScript" value="js" />
           </Picker>

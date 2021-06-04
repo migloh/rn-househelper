@@ -19,6 +19,7 @@ import { faCoffee, faChevronLeft, faAppleAlt} from '@fortawesome/free-solid-svg-
 import { API_GEO, baseUrl, hostUrl } from '../../notgood/geocodingAPI';
 import {AuthContext} from '../context';
 
+export const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
 export default function Profile() {
   const { signOut } = React.useContext(AuthContext);
@@ -42,7 +43,6 @@ export default function Profile() {
   //     console.error(error);
   //   });
   // }
-  const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
   const __doSignOut = async () => {
     try{
@@ -70,7 +70,7 @@ export default function Profile() {
             <View style={styles.infoCol}>
               <Text style={[styles.headerTitle, {fontSize: 30}]}>Misaka Mikoto</Text>
               <View style={styles.userStatusBorder}>
-                <Text style={{color: 'white', fontWeight: 'bold'}}>EMPLOYER</Text>
+                <Text style={styles.userRole}>EMPLOYER</Text>
               </View>
             </View>
           </View>
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, 
   },
   scrollableContent: {
-    paddingTop: 30,
+    paddingTop: 20,
   },
   overallInfo: {
     flexDirection: 'row', 
@@ -163,6 +163,10 @@ const styles = StyleSheet.create({
   },
   infoCol: {
     alignItems: 'flex-start'
+  },
+  userRole: {
+    color: 'white', 
+    fontWeight: 'bold'
   },
   userStatusBorder: {
     borderWidth: 2, 

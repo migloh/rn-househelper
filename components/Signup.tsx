@@ -88,6 +88,7 @@ export default function Signup({route, navigation}: SignupProps) {
               onFocus={() => setInputBorder1(true)}
               onBlur={() => setInputBorder1(false)}
               placeholderTextColor = {Grays.gray_0}
+              autoCapitalize='words'
               value={fname}
               onChangeText={setFname}
             />
@@ -100,6 +101,7 @@ export default function Signup({route, navigation}: SignupProps) {
               onFocus={() => setInputBorder2(true)}
               onBlur={() => setInputBorder2(false)}
               placeholderTextColor = {Grays.gray_0}
+              autoCapitalize='none'
               value={mail}
               onChangeText={setMail}
             />
@@ -112,6 +114,7 @@ export default function Signup({route, navigation}: SignupProps) {
               onFocus={() => setInputBorder3(true)}
               onBlur={() => setInputBorder3(false)}
               placeholderTextColor = {Grays.gray_0}
+              autoCapitalize='none'
               secureTextEntry={true}
               value={pass}
               onChangeText={setPass}
@@ -162,7 +165,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, 
   },
   scrollableContent: {
-    paddingTop: 30
+    paddingTop: 20
   },
   signinOptions: {
     width: "100%", 

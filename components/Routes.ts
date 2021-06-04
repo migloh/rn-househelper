@@ -5,7 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 export enum EnumTabs {
   Locations = "Locations",
-  Users = "Users",
+  UserStack = "UserStack",
   Messages = "Messages",
   Profile = "Profile",
   
@@ -13,7 +13,7 @@ export enum EnumTabs {
 
 export type BottomTabParamList = {
   [EnumTabs.Locations]: undefined;
-  [EnumTabs.Users]: undefined;
+  [EnumTabs.UserStack]: undefined;
   [EnumTabs.Messages]: undefined;
   [EnumTabs.Profile]: undefined
 };
@@ -31,7 +31,18 @@ export enum AuthRoutes {
   Signup = "Signup",
   Login = "Login",
   Recovery = "Recovery"
-}
+};
+
+export enum UserRoute {
+  UsersList = "UsersList",
+  UserDetail = "UserDetail",
+  Inbox = "Inbox"
+};
+
+export enum BoxRoute {
+  Tabs = "Tabs",
+  Inbox = "Inbox"
+};
 
 export type AppStackParamList = {
   [AppRoutes.LoadingScreen]: undefined,
@@ -46,13 +57,22 @@ export type AuthStackParamList = {
   [AuthRoutes.Recovery]: undefined
 };
 
+export type UserStackParamList = {
+  [UserRoute.UsersList]: undefined,
+  [UserRoute.UserDetail]: undefined,
+}
+
 type LoadingScreenRouteProp = RouteProp<AppStackParamList, AppRoutes.LoadingScreen>;
 type AuthScreensRouteProp = RouteProp<AppStackParamList, AppRoutes.AuthScreens>;
 type HomeScreenRouteProp = RouteProp<AppStackParamList, AppRoutes.Home>;
+
 type WelcomeScreenRouteProp = RouteProp<AuthStackParamList, AuthRoutes.Welcome>;
 type SignupScreenRouteProp = RouteProp<AuthStackParamList, AuthRoutes.Signup>;
 type LoginScreenRouteProp = RouteProp<AuthStackParamList, AuthRoutes.Login>;
 type RecoveryScreenRouteProp = RouteProp<AuthStackParamList, AuthRoutes.Recovery>;
+
+type UsersListScreenRouteProp = RouteProp<UserStackParamList, UserRoute.UsersList>;
+type UserDetailScreenRouteProp = RouteProp<UserStackParamList, UserRoute.UserDetail>;
 
 type LoadingScreenNavigationProp = StackNavigationProp<
   AppStackParamList,
@@ -66,6 +86,7 @@ type HomeScreenNavigationProp = StackNavigationProp<
   AppStackParamList,
   AppRoutes.Home
 >;
+
 type WelcomeScreenNavigationProp = StackNavigationProp<
   AuthStackParamList,
   AuthRoutes.Welcome
@@ -83,6 +104,15 @@ type RecoveryScreenNavigationProps = StackNavigationProp<
   AuthRoutes.Recovery
 >;
 
+type UsersListScreenNavigationProp = StackNavigationProp<
+  UserStackParamList,
+  UserRoute.UsersList
+>;
+type UserDetailScreenNavigationProp = StackNavigationProp<
+  UserStackParamList,
+  UserRoute.UserDetail
+>;
+
 export type LoadingScreenProps = {
   route: LoadingScreenRouteProp;
   navigation: LoadingScreenNavigationProp;
@@ -95,6 +125,7 @@ export type HomeProps = {
   route: HomeScreenRouteProp,
   navigation: HomeScreenNavigationProp
 };
+
 export type WelcomeProps = {
   route: WelcomeScreenRouteProp;
   navigation: WelcomeScreenNavigationProp;
@@ -110,4 +141,13 @@ export type LoginProps = {
 export type RecoveryProps = {
   route: RecoveryScreenRouteProp;
   navigation: RecoveryScreenNavigationProps;
-}
+};
+
+export type UsersListProps = {
+  route: UsersListScreenRouteProp;
+  navigation: UsersListScreenNavigationProp;
+};
+export type UserDetailProps = {
+  route: UserDetailScreenRouteProp;
+  navigation: UserDetailScreenNavigationProp;
+};

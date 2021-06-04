@@ -16,7 +16,6 @@ import {LoginProps, AuthRoutes} from './Routes';
 import auth from '@react-native-firebase/auth'; 
 import {AuthContext} from './context';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function Login({route, navigation}: LoginProps) {
   const [mail, setMail] = useState<string>('');
@@ -64,11 +63,11 @@ export default function Login({route, navigation}: LoginProps) {
             </TouchableOpacity>
           </View>
           <View style={styles.lowerLine}>
-            <Text style={{color: Grays.gray_0}}>Already have an account?</Text>
+            <Text style={{color: Grays.gray_0}}>Don't have an account?</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate(AuthRoutes.Login)}
             >
-              <Text style={styles.actionText}> Log in</Text>
+              <Text style={styles.actionText}> Sign up</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.inputTitle}>Email</Text>
@@ -82,6 +81,7 @@ export default function Login({route, navigation}: LoginProps) {
               returnKeyType="next"
               blurOnSubmit={false}
               placeholderTextColor={Grays.gray_0}
+              autoCapitalize='none'
               value={mail}
               onChangeText={setMail}
             />
@@ -95,6 +95,7 @@ export default function Login({route, navigation}: LoginProps) {
               onFocus={() => setInputBorder2(true)}
               onBlur={() => setInputBorder2(false)}
               placeholderTextColor={Grays.gray_0}
+              autoCapitalize='none'
               value={pass}
               onChangeText={setPass}
               secureTextEntry={true}
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, 
   },
   scrollableContent: {
-    paddingTop: 30
+    paddingTop: 20
   },
   signinOptions: {
     width: "100%", 

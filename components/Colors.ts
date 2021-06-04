@@ -18,5 +18,5 @@ export const Grays = {
 export const inBlack = {
   black_0: '#414052',
   black_1: '#272732',
-  black_2: '#21212B'
+  black_2: '#20212C'
 }
