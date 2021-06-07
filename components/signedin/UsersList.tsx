@@ -36,7 +36,7 @@ const fakeInfo = [
     address: '18 Hoang Quoc Viet, Nghia Do, Cau Giay, Hanoi',
     status: 'Part-time'
   },
-]
+];
 
 export default function UsersList({route, navigation}: UsersListProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
@@ -102,7 +102,6 @@ const styles = StyleSheet.create({
   upperBar: {
     flexDirection: 'row', 
     alignItems: 'center',
-    backgroundColor: 'blue', 
     padding: 20
   },
   headerTitle: {

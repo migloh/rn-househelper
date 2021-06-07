@@ -65,7 +65,7 @@ export default function Login({route, navigation}: LoginProps) {
           <View style={styles.lowerLine}>
             <Text style={{color: Grays.gray_0}}>Don't have an account?</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate(AuthRoutes.Login)}
+              onPress={() => navigation.navigate(AuthRoutes.Signup)}
             >
               <Text style={styles.actionText}> Sign up</Text>
             </TouchableOpacity>

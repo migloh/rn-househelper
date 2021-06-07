@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ScrollView
 } from 'react-native';
+import { Rating, AirbnbRating } from 'react-native-ratings';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { UserRoute, UserDetailProps } from '../Routes';
@@ -17,7 +18,7 @@ import { Blues, Grays, inBlack } from '../Colors';
 import { lorem } from './Profile';
 import Modal from 'react-native-modal';
 
-const InfoCard = ({title, detail, style}: any) => (
+export const InfoCard = ({title, detail, style}: any) => (
   <View style={{...style}}>
     <Text style={styles.selfIntroTitle}>{title}</Text>
     <Text style={[styles.basicDetail, {fontSize: 20}]}>{detail}</Text>
@@ -27,6 +28,7 @@ const InfoCard = ({title, detail, style}: any) => (
 export default function UserDetail({route, navigation}: UserDetailProps) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [ratingModal, setRatingModal] = useState<boolean>(false);
+  const [ratingValue, setRatingValue] = useState<number>(0);
   return (
     <View style={styles.container}>
       <View style={styles.upperBar}>
@@ -93,7 +95,9 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
           </View>
         </ScrollView>
         <Modal
-          // animationType="slide"
+          animationIn='fadeInUp'
+          animationOut='fadeOutDown'
+          style={{margin: 0}}
           coverScreen={true}
           isVisible={modalVisible}>
           <View style={{flex: 1, backgroundColor: 'black'}}>
@@ -104,16 +108,48 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
               >
                 <FontAwesomeIcon icon={faChevronLeft} color="white" size={20}/>
               </TouchableOpacity>
-              <Text style={styles.headerTitle}>Message</Text>
+              <Text style={styles.headerTitle}>Misaka</Text>
+              <Button title="BETA" onPress={() => setModalVisible(!modalVisible)} />
             </View>
-            <Button title="close" onPress={() => setModalVisible(!modalVisible)} />
+            <Inbox />
           </View>
         </Modal>
         <Modal
           isVisible={ratingModal}
+          style={{alignSelf: 'center'}}
+          animationIn='fadeIn'
+          animationOut='fadeOut'
         >
-          <View style={{width: '50%', height: '50%', backgroundColor: 'cyan'}}>
-            <Button title='close' onPress={() => setRatingModal(!ratingModal)} />
+          <View style={styles.ratingModal}>
+            <Text style={styles.inRatingText}>Your rating</Text>
+            <AirbnbRating
+              count={5}
+              reviews={["Terrible", "Bad", "OK", "Good", "Very Good"]}
+              defaultRating={ratingValue}
+              selectedColor={Blues.blue_1}
+              reviewColor={Blues.blue_1}
+              onFinishRating={(val) => setRatingValue(val)}
+              size={30}
+              starContainerStyle={{marginBottom: 40}}
+              ratingContainerStyle={{marginTop: 30}}
+            />
+            <TouchableOpacity
+              style={[styles.actionRating, {backgroundColor: Blues.blue_2}]}
+              onPress={() => setRatingModal(!ratingModal)}
+            >
+              <Text style={styles.ratingText}>OK</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionRating, {backgroundColor: inBlack.black_2}]}
+              onPress={
+                useCallback(() => {
+                  setRatingModal(!ratingModal);
+                  setRatingValue(0);
+                }, [])
+              }
+            >
+              <Text style={styles.ratingText}>Delete rating</Text>
+            </TouchableOpacity>
           </View>
         </Modal>
       </View>
@@ -241,5 +277,30 @@ const styles = StyleSheet.create({
   },
   infoCard: {
     marginBottom: 10
+  },
+  ratingModal: {
+    backgroundColor: Grays.gray_4 , 
+    alignItems: 'center', 
+    borderRadius: 15, 
+    paddingVertical: 30, 
+    paddingHorizontal: 20
+  },
+  inRatingText: {
+    color: 'white', 
+    fontWeight: 'bold', 
+    fontSize: 30
+  },
+  actionRating: {
+    width: 250, 
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 15,
+    borderRadius: 15,
+  },
+  ratingText: {
+    fontSize: 20, 
+    color: 'white',
+    fontWeight: 'bold'
   }
 });

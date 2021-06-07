@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCoffee, faChevronLeft, faAppleAlt} from '@fortawesome/free-solid-svg-icons'
 import { API_GEO, baseUrl, hostUrl } from '../../notgood/geocodingAPI';
 import {AuthContext} from '../context';
+import { InfoCard } from './UserDetail';
 
 export const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
@@ -69,40 +70,23 @@ export default function Profile() {
             />
             <View style={styles.infoCol}>
               <Text style={[styles.headerTitle, {fontSize: 30}]}>Misaka Mikoto</Text>
-              <View style={styles.userStatusBorder}>
-                <Text style={styles.userRole}>EMPLOYER</Text>
-              </View>
+              <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                <View style={styles.userStatusBorder}>
+                  <Text style={styles.userRole}>EMPLOYER</Text>
+                </View>
+              </View>        
             </View>
           </View>
-          <View style={styles.infoField}>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Display Name</Text>
-              <View style={styles.innerCard}>
-                <Text style={styles.infoCard}>Misaka Mikoto</Text>
-                <TouchableOpacity style={styles.cardButton}>
-                  <Text style={styles.cardTextButton}>Edit</Text>
-                </TouchableOpacity>
+            <View style={[styles.selfIntro, {marginBottom: 30}]}>
+              <View style={{flexDirection: 'row'}}>
+                <InfoCard style={styles.infoCard} title="Sex" detail="Male" />
+                <View style={{width: '40%', height: 'auto'}} />
+                <InfoCard style={styles.infoCard} title="Date of Birth" detail="02/05/1994" />
               </View>
+              <InfoCard style={styles.infoCard} title="Phone Number" detail="0981273645" />
+              <InfoCard style={styles.infoCard} title="Email" detail="email@email.com" />
+              <InfoCard style={styles.infoCard} title="Address" detail="18 Hoang Quoc Viet, Nghia Do, Cau Giay, Hanoi" />
             </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Email</Text>
-              <View style={styles.innerCard}>
-                <Text style={styles.infoCard}>misaka@index.com</Text>
-                <TouchableOpacity style={styles.cardButton}>
-                  <Text style={styles.cardTextButton}>Edit</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>Password</Text>
-              <View style={styles.innerCard}>
-                <Text style={styles.infoCard}>*********</Text>
-                <TouchableOpacity style={styles.cardButton}>
-                  <Text style={styles.cardTextButton}>Change</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
           <View style={styles.infoField}>
             <View style={[styles.cardInfo, {alignItems: 'flex-start'}]}>
               <Text style={styles.cardTitle}>Job description</Text>
@@ -189,7 +173,8 @@ const styles = StyleSheet.create({
     marginVertical: 7
   },
   cardTitle: {
-    color: Grays.gray_1
+    color: Grays.gray_1,
+    fontSize: 15
   },
   innerCard: {
     flexDirection: 'row', 
@@ -199,7 +184,8 @@ const styles = StyleSheet.create({
   infoCard: {
     color: 'white', 
     fontWeight: 'bold', 
-    fontSize: 20
+    fontSize: 20,
+    marginBottom: 10
   },
   cardButton: {
     backgroundColor: inBlack.black_0, 
@@ -212,7 +198,8 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   descriptionText: {
-    color: 'white'
+    color: 'white',
+    fontSize: 16
   },
   button: {
     width: "100%",
@@ -227,5 +214,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',  
     fontWeight: 'bold'
+  },
+  selfIntro: {
+    width: '100%',
+    maxWidth: '100%',
+    height: 'auto',
+    borderRadius: 15,
+    backgroundColor: inBlack.black_2,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginTop: 30
   },
 });
