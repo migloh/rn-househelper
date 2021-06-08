@@ -18,23 +18,46 @@ import firestore from '@react-native-firebase/firestore';
 import {Picker} from '@react-native-picker/picker';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {switchProvince} from '../assets/vietnam_dataset/data/province';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DatePicker from 'react-native-date-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {switchProvince} from '../assets/vietnam_dataset/province';
+
+type districtType = Array<{
+  'name': string,
+  'pre': string,
+  'ward': Array<{
+    'name': string,
+    'pre': string
+  }>,
+}>;
+
+type wardType = Array<{
+  'name': string,
+  'pre': string
+}>;
+
 
 export default function Signup({route, navigation}: SignupProps) {
   const [mail, setMail] = useState<string>('');
   const [pass, setPass] = useState<string>('');
   const [fname, setFname] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
-  const [inputBorder1, setInputBorder1] = useState<boolean>(false);
-  const [inputBorder2, setInputBorder2] = useState<boolean>(false);
-  const [inputBorder3, setInputBorder3] = useState<boolean>(false);
+  const [showDateModal, setShowDateModal] = useState<boolean>(false);
+  const [dob, setDob] = useState<Date>(new Date());
+  const [inputBorderName, setinputBorderName] = useState<boolean>(false);
+  const [inputBorderMail, setinputBorderMail] = useState<boolean>(false);
+  const [inputBorderPass, setinputBorderPass] = useState<boolean>(false);
+  const [inputBorderPhone, setInputBorderPhone] = useState<boolean>(false);
+  const [inputBorderAddr, setInputBorderAddr] = useState<boolean>(false)
   const [role, setRole] = useState<string>('none');
   const [gender, setGender] = useState<string>('none');
-  const [availabilite, setAvailabilite] = useState<string>('');
-  const [province, setProvince] = useState<string>('');
-  const [district, setDistrict] = useState<string>('');
-  const [ward, setWard] = useState<string>('');
-  const [id, setId] = useState<number>(0);
+  const [availabilite, setAvailabilite] = useState<string>('none');
+  const [province, setProvince] = useState<string>('none');
+  const [districtList, setDistrictList] = useState<districtType>([]);
+  const [district, setDistrict] = useState<string>('none');
+  const [wardList, setWardList] = useState<wardType>([]);
+  const [ward, setWard] = useState<string>('none');
 
   const prv = require('../assets/vietnam_dataset/Index.json');
 
@@ -95,12 +118,12 @@ export default function Signup({route, navigation}: SignupProps) {
             </TouchableOpacity>
           </View>
           <Text style={styles.inputTitle}>Name</Text>
-          <View style={[styles.inputArea, {borderColor: inputBorder1 == true ? Blues.blue_2 : Grays.gray_2 }]}>
+          <View style={[styles.inputArea, {borderColor: inputBorderName == true ? Blues.blue_2 : Grays.gray_2 }]}>
             <TextInput 
               style={styles.textInput}
               placeholder= "Full name" 
-              onFocus={() => setInputBorder1(true)}
-              onBlur={() => setInputBorder1(false)}
+              onFocus={() => setinputBorderName(true)}
+              onBlur={() => setinputBorderName(false)}
               placeholderTextColor = {Grays.gray_0}
               autoCapitalize='words'
               value={fname}
@@ -124,20 +147,37 @@ export default function Signup({route, navigation}: SignupProps) {
           </View>
           <Text style={styles.inputTitle}>Date of birth</Text>
           <View style={styles.inputArea}>
-            <TextInput 
-              style={styles.textInput}
-              placeholder= "Full name" 
-              placeholderTextColor = {Grays.gray_0}
-              autoCapitalize='words'
-            />
+            <TouchableOpacity
+              onPress={() => {setShowDateModal(true)}}
+            > 
+              <Text style={styles.textInput}>{JSON.stringify(dob).slice(1, 11)}</Text>
+            </TouchableOpacity>
+            {
+              showDateModal && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  maximumDate={new Date()}
+                  value={dob}
+                  mode='date'
+                  display="spinner"
+                  onChange={(event: Event, dal: Date|undefined) => {
+                    if (dal !== undefined){ 
+                      setDob(dal);
+                      console.log(dal);
+                      setShowDateModal(false);
+                    }
+                  }}
+                />
+              )
+            }
           </View>
           <Text style={styles.inputTitle}>Phone number</Text>
-          <View style={[styles.inputArea, {borderColor: inputBorder1 == true ? Blues.blue_2 : Grays.gray_2 }]}>
+          <View style={[styles.inputArea, {borderColor: inputBorderPhone == true ? Blues.blue_2 : Grays.gray_2 }]}>
             <TextInput 
               style={styles.textInput}
               placeholder= "0123456789" 
-              // onFocus={() => setInputBorder1(true)}
-              // onBlur={() => setInputBorder1(false)}
+              onFocus={() => setInputBorderPhone(true)}
+              onBlur={() => setInputBorderPhone(false)}
               placeholderTextColor = {Grays.gray_0}
               keyboardType='number-pad'
               value={phone}
@@ -145,12 +185,12 @@ export default function Signup({route, navigation}: SignupProps) {
             />
           </View>
           <Text style={styles.inputTitle}>Email</Text>
-          <View style={[styles.inputArea, {borderColor: inputBorder2 == true ? Blues.blue_2 : Grays.gray_2 }]}>
+          <View style={[styles.inputArea, {borderColor: inputBorderMail == true ? Blues.blue_2 : Grays.gray_2 }]}>
             <TextInput 
               style={styles.textInput}
               placeholder= "tim@apple.com" 
-              onFocus={() => setInputBorder2(true)}
-              onBlur={() => setInputBorder2(false)}
+              onFocus={() => setinputBorderMail(true)}
+              onBlur={() => setinputBorderMail(false)}
               placeholderTextColor = {Grays.gray_0}
               autoCapitalize='none'
               value={mail}
@@ -170,12 +210,12 @@ export default function Signup({route, navigation}: SignupProps) {
             }
           </View>
           <Text style={styles.inputTitle}>Password</Text>
-          <View style={[styles.inputArea, {borderColor: inputBorder3 == true ? Blues.blue_2 : Grays.gray_2 }]}>
+          <View style={[styles.inputArea, {borderColor: inputBorderPass == true ? Blues.blue_2 : Grays.gray_2 }]}>
             <TextInput 
               style={styles.textInput}
               placeholder= "Pick a strong password"
-              onFocus={() => setInputBorder3(true)}
-              onBlur={() => setInputBorder3(false)}
+              onFocus={() => setinputBorderPass(true)}
+              onBlur={() => setinputBorderPass(false)}
               placeholderTextColor = {Grays.gray_0}
               autoCapitalize='none'
               secureTextEntry={true}
@@ -224,21 +264,23 @@ export default function Signup({route, navigation}: SignupProps) {
           <Text style={styles.inputTitle}>Province</Text>
           <View style={[styles.inputArea, {paddingHorizontal: 0}]}>
             <Picker
-              style={gender === 'none' ? styles.pickerNone : styles.pickerPicked}
+              style={province === 'none' ? styles.pickerNone : styles.pickerPicked}
               selectedValue={province}
               dropdownIconColor={Grays.gray_0}
               onValueChange={(itemValue, itemIndex) => {
                 setProvince(itemValue);
                 console.log(itemValue);
+                setWardList([]);
+                setDistrict('none');
+                setWard('none');
                 let lmeo = switchProvince(itemValue);
-                console.log(lmeo)
-                // console.log(lesProvinces[itemValue])
+                if(lmeo == undefined) setDistrictList([]);
+                else setDistrictList(lmeo.district);
               }}>
               <Picker.Item label="Choose one" value="none" />
               {
-                // lmeo.map(item => <Picker.Item label={item.city} value={item.city} /> )
                 prv.map((element: any, index: any) => (
-                  <Picker.Item label={element.city} value={element.code} /> 
+                  <Picker.Item key={index} label={element.city} value={element.code} /> 
                 ))
               }
             </Picker>
@@ -246,38 +288,59 @@ export default function Signup({route, navigation}: SignupProps) {
           <Text style={styles.inputTitle}>District</Text>
           <View style={[styles.inputArea, {paddingHorizontal: 0}]}>
             <Picker
-              style={gender === 'none' ? styles.pickerNone : styles.pickerPicked}
-              selectedValue={gender}
+              style={district === 'none' ? styles.pickerNone : styles.pickerPicked}
+              selectedValue={district}
               dropdownIconColor={Grays.gray_0}
-              onValueChange={(itemValue, itemIndex) =>
-                setGender(itemValue)
-              }>
+              onValueChange={(itemValue, itemIndex) => {
+                setDistrict(itemValue);
+                setWardList([]);
+                setWard('none');
+                let res = districtList.find(element => element.name == itemValue);
+                if (res == undefined) setWardList([]);
+                else setWardList(res?.ward);
+              }}>
               <Picker.Item label="Choose one" value="none" />
+              {
+                districtList.length !== 0
+                ? districtList.map((item: any, index: any) => (
+                  <Picker.Item key={index} label={item.name} value={item.name} />
+                ))
+                : null
+              }
             </Picker>
           </View>
           <Text style={styles.inputTitle}>Ward</Text>
           <View style={[styles.inputArea, {paddingHorizontal: 0}]}>
             <Picker
-              style={gender === 'none' ? styles.pickerNone : styles.pickerPicked}
+              style={ward === 'none' ? styles.pickerNone : styles.pickerPicked}
               selectedValue={gender}
               dropdownIconColor={Grays.gray_0}
               onValueChange={(itemValue, itemIndex) =>
-                setGender(itemValue)
+                setWard(itemValue)
               }>
               <Picker.Item label="Choose one" value="none" />
+              {
+                wardList.length !== 0
+                ? wardList.map((item: any, index: any) => (
+                  <Picker.Item key={index} label={item.name} value={item.name} />
+                ))
+                : null
+              }
             </Picker>
           </View>
           <Text style={styles.inputTitle}>Home address</Text>
-          <View style={styles.inputArea}>
+          <View style={[styles.inputArea, {borderColor: inputBorderAddr == true ? Blues.blue_2 : Grays.gray_2 }]}>
             <TextInput 
               style={styles.textInput}
               placeholder= "123 Name street" 
               placeholderTextColor = {Grays.gray_0}
               autoCapitalize='words'
+              onFocus={() => setInputBorderAddr(true)}
+              onBlur={() => setInputBorderAddr(false)}
             />
           </View>
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, {marginBottom: 50}]}
             onPress={() => {
               if(mail === '' || pass === '' || fname === '') Alert.alert("Warning", "Empty string")
               else __doCreateUser(mail, pass, fname)
