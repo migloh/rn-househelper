@@ -4,12 +4,11 @@ import {
   Text,
   Button,
   StyleSheet,
-  // Modal,
   Image,
   TouchableOpacity,
   ScrollView
 } from 'react-native';
-import { Rating, AirbnbRating } from 'react-native-ratings';
+import { AirbnbRating } from 'react-native-ratings';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { UserRoute, UserDetailProps } from '../Routes';
@@ -98,7 +97,6 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
           animationIn='fadeInUp'
           animationOut='fadeOutDown'
           style={{margin: 0}}
-          coverScreen={true}
           isVisible={modalVisible}>
           <View style={{flex: 1, backgroundColor: 'black'}}>
             <View style={styles.upperBar}>

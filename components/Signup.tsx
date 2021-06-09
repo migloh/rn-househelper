@@ -23,7 +23,7 @@ import DatePicker from 'react-native-date-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {switchProvince} from '../assets/vietnam_dataset/province';
 
-type districtType = Array<{
+export type districtType = Array<{
   'name': string,
   'pre': string,
   'ward': Array<{
@@ -32,7 +32,7 @@ type districtType = Array<{
   }>,
 }>;
 
-type wardType = Array<{
+export type wardType = Array<{
   'name': string,
   'pre': string
 }>;
@@ -58,6 +58,7 @@ export default function Signup({route, navigation}: SignupProps) {
   const [district, setDistrict] = useState<string>('none');
   const [wardList, setWardList] = useState<wardType>([]);
   const [ward, setWard] = useState<string>('none');
+  const [homeAdd, setHomeAdd] = useState<string>('');
 
   const prv = require('../assets/vietnam_dataset/Index.json');
 
@@ -335,6 +336,8 @@ export default function Signup({route, navigation}: SignupProps) {
               placeholder= "123 Name street" 
               placeholderTextColor = {Grays.gray_0}
               autoCapitalize='words'
+              value={homeAdd}
+              onChangeText={setHomeAdd}
               onFocus={() => setInputBorderAddr(true)}
               onBlur={() => setInputBorderAddr(false)}
             />
@@ -354,7 +357,7 @@ export default function Signup({route, navigation}: SignupProps) {
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black'
