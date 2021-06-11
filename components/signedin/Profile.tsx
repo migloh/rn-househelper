@@ -13,10 +13,8 @@ import {
 import auth from '@react-native-firebase/auth';
 // import {HomeProps} from '../Routes';
 import {Blues, Grays, inBlack} from '../Colors';
-import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCoffee, faChevronLeft, faAppleAlt} from '@fortawesome/free-solid-svg-icons'
-import { API_GEO, baseUrl, hostUrl } from '../../notgood/geocodingAPI';
 import EditProfile from './EditProfile';
 import EditAccount from './EditAccount';
 import Modal from 'react-native-modal';
@@ -32,26 +30,6 @@ export default function Profile() {
   const [inputBorder, setInputBorder] = useState<boolean>(false);
   const [description, setDescription] = useState<string>('');
   const { signOut } = React.useContext(AuthContext);
-  // const [stt, setStt] = useState<boolean>(false);  const [addObj, setAddObj] = useState<object>({});
-  // const addQuery = async ( adrs: string ) => { 
-  //   const dataInput = {
-  //     method: 'GET',
-  //     url: baseUrl,
-  //     params: {address: adrs},
-  //     headers: {
-  //       'x-rapidapi-key': API_GEO,
-  //       'x-rapidapi-host': hostUrl
-  //     }
-  //   };
-
-  //   await axios.request(dataInput).then(function (response: any) {
-  //     console.log(JSON.stringify(response.data));
-  //     setAddObj(response.data);
-  //     setStt(true);
-  //   }).catch(function (error: any) {
-  //     console.error(error);
-  //   });
-  // }
 
   const __doSignOut = async () => {
     try{
@@ -287,9 +265,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   infoCard: {
-    color: 'white', 
-    fontWeight: 'bold', 
-    fontSize: 20,
+    marginBottom: 10
   },
   cardButton: {
     backgroundColor: inBlack.black_0, 

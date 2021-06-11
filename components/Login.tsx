@@ -53,7 +53,7 @@ export default function Login({route, navigation}: LoginProps) {
       </View>
       <View style={styles.lowerSpace}>
         <ScrollView style={styles.scrollableContent}>
-          <Text style={{color: Grays.gray_0}}>Log in with one of following options</Text>
+          {/* <Text style={{color: Grays.gray_0}}>Log in with one of following options</Text>
           <View style={styles.signinOptions}>
             <TouchableOpacity style={styles.signinOptionButton}>
               <FontAwesome5 name={'google'} size={24} color="white" />
@@ -61,7 +61,7 @@ export default function Login({route, navigation}: LoginProps) {
             <TouchableOpacity style={styles.signinOptionButton}>
               <FontAwesome5 name={'apple'} size={24} color="white" />
             </TouchableOpacity>
-          </View>
+          </View> */}
           <View style={styles.lowerLine}>
             <Text style={{color: Grays.gray_0}}>Don't have an account?</Text>
             <TouchableOpacity

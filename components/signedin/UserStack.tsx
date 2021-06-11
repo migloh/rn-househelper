@@ -16,7 +16,6 @@ export default function UserStack() {
     >
       <Stack.Screen name={UserRoute.UsersList} component={UsersList} />
       <Stack.Screen name={UserRoute.UserDetail} component={UserDetail} />
-      <Stack.Screen name={UserRoute.Inbox} component={Inbox} />
     </Stack.Navigator>
   );
 }

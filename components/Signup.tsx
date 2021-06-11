@@ -8,6 +8,7 @@ import {
   Alert,
   StatusBar
 } from 'react-native'
+import axios, { AxiosProxyConfig } from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faChevronLeft, faCheckCircle} from '@fortawesome/free-solid-svg-icons'
 import {Blues, Grays} from './Colors';
@@ -21,6 +22,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import DatePicker from 'react-native-date-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { API_GEO, baseUrl, hostUrl } from '../notgood/geocodingAPI';
 import {switchProvince} from '../assets/vietnam_dataset/province';
 
 export type districtType = Array<{
@@ -37,6 +39,10 @@ export type wardType = Array<{
   'pre': string
 }>;
 
+type CoordinateType = {
+  lat: number,
+  lng: number
+};
 
 export default function Signup({route, navigation}: SignupProps) {
   const [mail, setMail] = useState<string>('');
@@ -50,7 +56,7 @@ export default function Signup({route, navigation}: SignupProps) {
   const [inputBorderPass, setinputBorderPass] = useState<boolean>(false);
   const [inputBorderPhone, setInputBorderPhone] = useState<boolean>(false);
   const [inputBorderAddr, setInputBorderAddr] = useState<boolean>(false)
-  const [role, setRole] = useState<string>('none');
+  const [role, setRole] = useState<string>('');
   const [gender, setGender] = useState<string>('none');
   const [availabilite, setAvailabilite] = useState<string>('none');
   const [province, setProvince] = useState<string>('none');
@@ -59,12 +65,51 @@ export default function Signup({route, navigation}: SignupProps) {
   const [wardList, setWardList] = useState<wardType>([]);
   const [ward, setWard] = useState<string>('none');
   const [homeAdd, setHomeAdd] = useState<string>('');
+  const [queryStt, setQueryStt] = useState<boolean>(false);
+  const [addCoor, setAddCoor] = useState<CoordinateType|undefined>();
+  const queryCoor = async ( adrs: string ) => { 
+    const dataInput: AxiosProxyConfig = {
+      method: 'GET',
+      url: baseUrl,
+      params: {address: adrs},
+      headers: {
+        'x-rapidapi-key': API_GEO,
+        'x-rapidapi-host': hostUrl
+      }
+    };
+
+    await axios.request(dataInput).then(function (response: any) {
+      console.log(JSON.stringify(response.data));
+      setAddCoor(response.data.results[0].geometry.location)
+      Alert.alert('Query done', 'Mission success!');
+    }).catch(function (error: any) {
+      console.error(error);
+    });
+  }
 
   const prv = require('../assets/vietnam_dataset/Index.json');
 
   const mailCond = /^[a-zA-Z0-9\._]{3,50}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,1}$/;
 
-  const __doCreateUser = async (lmail: string, password: string, lame: string) => {
+  var fullAdd: string = homeAdd + ', ' + ward + ', ' + district + ', ' + province;
+
+  const __doCreateUser = async (
+    lmail: string, 
+    password: string, 
+    lame: string, 
+    sex: string, 
+    born: Date, 
+    pnum: string, 
+    rooru: string,
+    avail: string,
+    prov: string,
+    dist: string,
+    ward: string,
+    addh: string,
+    // lati: number,
+    // longi: number
+    coor: CoordinateType|undefined
+    ) => {
     try {
       let response = await auth().createUserWithEmailAndPassword(
         lmail,
@@ -76,9 +121,30 @@ export default function Signup({route, navigation}: SignupProps) {
         const userID: string = response.user.uid;
         firestore().collection('users').doc(userID).set({
           fname: lame,
-          email: lmail
+          gender: sex,
+          dob: born,
+          pnumber: pnum,
+          email: lmail,
+          role: rooru,
+          address: [
+           {
+             addName: {
+               province: prov,
+               district: dist,
+               ward: ward,
+               homeNumber: addh
+             },
+             homeCoor: coor           
+           } 
+          ]
         })
         .then(() => console.log('ok created'))
+        if(rooru === 'Employee') {
+          firestore().collection('employees').doc(userID).set({
+            availability: avail,
+            rating: []
+          })
+        }
         navigation.navigate(AuthRoutes.Login);
       }
     } catch (e) {
@@ -101,7 +167,7 @@ export default function Signup({route, navigation}: SignupProps) {
       </View>
       <View style={styles.lowerSpace}>
         <ScrollView style={styles.scrollableContent}>
-          <Text style={{color: Grays.gray_0}}>Sign up with one of following options</Text>
+          {/* <Text style={{color: Grays.gray_0}}>Sign up with one of following options</Text>
           <View style={styles.signinOptions}>
             <TouchableOpacity style={styles.signinOptionButton}>
               <FontAwesome5 name={'google'} size={24} color="white" />
@@ -109,7 +175,7 @@ export default function Signup({route, navigation}: SignupProps) {
             <TouchableOpacity style={styles.signinOptionButton}>
               <FontAwesome5 name={'apple'} size={24} color="white" />
             </TouchableOpacity>
-          </View>
+          </View> */}
           <View style={styles.lowerLine}>
             <Text style={{color: Grays.gray_0}}>Already have an account?</Text>
             <TouchableOpacity
@@ -147,11 +213,11 @@ export default function Signup({route, navigation}: SignupProps) {
             </Picker>
           </View>
           <Text style={styles.inputTitle}>Date of birth</Text>
-          <View style={styles.inputArea}>
+          <View style={[styles.inputArea, {justifyContent: 'flex-start'}]}>
             <TouchableOpacity
               onPress={() => {setShowDateModal(true)}}
             > 
-              <Text style={styles.textInput}>{JSON.stringify(dob).slice(1, 11)}</Text>
+              <Text style={[styles.textInput, {marginLeft: 10}]}>{JSON.stringify(dob).slice(1, 11)}</Text>
             </TouchableOpacity>
             {
               showDateModal && (
@@ -234,12 +300,12 @@ export default function Signup({route, navigation}: SignupProps) {
                 setRole(itemValue)
               }>
               <Picker.Item label="Choose one" value="none" />
-              <Picker.Item label="Employee" value="eee" />
-              <Picker.Item label="Employer" value="eer" />
+              <Picker.Item label="Employee" value="Employee" />
+              <Picker.Item label="Employer" value="Employer" />
             </Picker>
           </View>
           {
-            role === 'eer'
+            role === 'Employee'
             ? (
               <>
                 <Text style={styles.inputTitle}>Availability</Text>
@@ -253,8 +319,8 @@ export default function Signup({route, navigation}: SignupProps) {
                     }>
                     <Picker.Item label="Choose one" value="none" />
                     <Picker.Item label="Not available" value="na" />
-                    <Picker.Item label="Part-time" value="parttime" />
-                    <Picker.Item label="Full-time" value="fulltime" />
+                    <Picker.Item label="Part-time" value="Part-time" />
+                    <Picker.Item label="Full-time" value="Full-time" />
                   </Picker>
                 </View>
               </>
@@ -268,20 +334,20 @@ export default function Signup({route, navigation}: SignupProps) {
               style={province === 'none' ? styles.pickerNone : styles.pickerPicked}
               selectedValue={province}
               dropdownIconColor={Grays.gray_0}
-              onValueChange={(itemValue, itemIndex) => {
-                setProvince(itemValue);
-                console.log(itemValue);
+              onValueChange={(itemValue: any, itemIndex) => {
+                setProvince(itemValue.city);
+                console.log(itemValue.code);
                 setWardList([]);
                 setDistrict('none');
                 setWard('none');
-                let lmeo = switchProvince(itemValue);
+                let lmeo = switchProvince(itemValue.code);
                 if(lmeo == undefined) setDistrictList([]);
                 else setDistrictList(lmeo.district);
               }}>
               <Picker.Item label="Choose one" value="none" />
               {
                 prv.map((element: any, index: any) => (
-                  <Picker.Item key={index} label={element.city} value={element.code} /> 
+                  <Picker.Item key={index} label={element.city} value={element} /> 
                 ))
               }
             </Picker>
@@ -332,21 +398,32 @@ export default function Signup({route, navigation}: SignupProps) {
           <Text style={styles.inputTitle}>Home address</Text>
           <View style={[styles.inputArea, {borderColor: inputBorderAddr == true ? Blues.blue_2 : Grays.gray_2 }]}>
             <TextInput 
-              style={styles.textInput}
+              style={[styles.textInput, {marginLeft: 20}]}
               placeholder= "123 Name street" 
               placeholderTextColor = {Grays.gray_0}
               autoCapitalize='words'
               value={homeAdd}
-              onChangeText={setHomeAdd}
+              onChangeText={(kotoba) => {
+                setHomeAdd(kotoba);
+                if (kotoba !== '') setQueryStt(false)
+                else setQueryStt(true); 
+              }}
               onFocus={() => setInputBorderAddr(true)}
               onBlur={() => setInputBorderAddr(false)}
             />
+            <TouchableOpacity
+              disabled={queryStt}
+              style={{padding: 10, backgroundColor: 'cyan', marginRight: 20}}
+              onPress={() => queryCoor(fullAdd)}
+            > 
+              <Text>query</Text> 
+            </TouchableOpacity>
           </View>
           <TouchableOpacity
             style={[styles.button, {marginBottom: 50}]}
             onPress={() => {
               if(mail === '' || pass === '' || fname === '') Alert.alert("Warning", "Empty string")
-              else __doCreateUser(mail, pass, fname)
+              else __doCreateUser(mail, pass, fname, gender, dob, phone, role, availabilite, province, district, ward, homeAdd, addCoor);
             }}
           >
             <Text style={styles.buttonText}>Create Account</Text>
@@ -423,7 +500,7 @@ export const styles = StyleSheet.create({
     height: 60,
     borderColor: Grays.gray_2,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'center',
     paddingHorizontal: 10,
     backgroundColor: Grays.gray_button
