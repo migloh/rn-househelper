@@ -126,6 +126,7 @@ export default function Signup({route, navigation}: SignupProps) {
           pnumber: pnum,
           email: lmail,
           role: rooru,
+          description: '',
           address: [
            {
              addName: {

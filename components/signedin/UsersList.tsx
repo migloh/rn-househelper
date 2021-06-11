@@ -1,4 +1,4 @@
-import React, {useState, PureComponent, memo} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Grays, Blues, inBlack } from '../Colors';
 import {Picker} from '@react-native-picker/picker';
 import { UserRoute, UsersListProps } from '../Routes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const fakeInfo = [
   {
@@ -42,25 +43,41 @@ export default function UsersList({route, navigation}: UsersListProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
   const accStatus: string = 'user';
   const renderUser = ({ item }: any) => (
-      <TouchableOpacity 
-        activeOpacity={0.8}
-        style={styles.userCard}
-        onPress={() => navigation.navigate(UserRoute.UserDetail)}
-      >
-        <Image 
-          source={require('../../assets/images/misaka.png')}
-          style={styles.userImage}
-        />
-        <View style={styles.infoArea}>
-          <Text style={styles.userName}>{item.fname}</Text>
-          <Text style={styles.userAddress}>{item.address}</Text>
-          {
-            accStatus === 'user' && 
-              <Text style={styles.userStatus}>{item.status}</Text>
-          }
-        </View>
-      </TouchableOpacity>
-    );
+    <TouchableOpacity 
+      activeOpacity={0.8}
+      style={styles.userCard}
+      onPress={() => navigation.navigate(UserRoute.UserDetail)}
+    >
+      <Image 
+        source={require('../../assets/images/misaka.png')}
+        style={styles.userImage}
+      />
+      <View style={styles.infoArea}>
+        <Text style={styles.userName}>{item.fname}</Text>
+        <Text style={styles.userAddress}>{item.address}</Text>
+        {
+          accStatus === 'user' && 
+            <Text style={styles.userStatus}>{item.status}</Text>
+        }
+      </View>
+    </TouchableOpacity>
+  );
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const value = await AsyncStorage.getItem('userRole')
+        if(value !== null) {
+          console.log('List role: ', value);
+          // value previously stored
+          //setstate would be here soon
+        }
+      } catch(e) {
+        // error reading value
+        console.log(e.message);
+      }
+    };
+    getData();
+  }), [];
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="black" />

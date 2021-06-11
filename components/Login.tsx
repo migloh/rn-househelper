@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import {LoginProps, AuthRoutes} from './Routes';
 import auth from '@react-native-firebase/auth'; 
 import {AuthContext} from './context';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({route, navigation}: LoginProps) {
   const [mail, setMail] = useState<string>('');
@@ -25,6 +27,31 @@ export default function Login({route, navigation}: LoginProps) {
   const passInputRef = useRef<TextInput>(null);
   const {signIn} = React.useContext(AuthContext);
 
+  const storeID = async (value: string) => {
+    try {
+      await AsyncStorage.setItem('currentID', value)
+      storeRole(value);
+    } catch (e) {
+      // saving error
+      console.log(e.message);
+    }
+  };
+
+  const storeRole = async (eeID: string|undefined) => {
+    var userRef = firestore().collection('users').doc(eeID);
+    var userInfo = await userRef.get();
+    if (!userInfo.exists){
+      console.log('Ne trouve pas les informations');
+    } else {
+      let res = userInfo.data();
+      if(res !== undefined) {
+        console.log(res.role);
+        await AsyncStorage.setItem('userRole', res.role)
+        .catch(e => console.log(e.message));
+      }
+    }
+  };
+
   const __doSignIn = async (lmeo: string, pwd: string) => {
     try {
       let response = await auth().signInWithEmailAndPassword(
@@ -32,13 +59,15 @@ export default function Login({route, navigation}: LoginProps) {
         pwd
         )
       if (response && response.user) {
-        console.log(response);
+        console.log(response.user.uid);
+        storeID(response.user.uid);
         if(signIn) signIn();
       }
     } catch (e) {
       Alert.alert("Warning", e.message);
     }
   }
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="black" />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -13,29 +13,97 @@ import {
 import auth from '@react-native-firebase/auth';
 // import {HomeProps} from '../Routes';
 import {Blues, Grays, inBlack} from '../Colors';
+import firestore from '@react-native-firebase/firestore';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faCoffee, faChevronLeft, faAppleAlt} from '@fortawesome/free-solid-svg-icons'
+import { faCoffee, faChevronLeft, faAppleAlt, fas} from '@fortawesome/free-solid-svg-icons'
 import EditProfile from './EditProfile';
 import EditAccount from './EditAccount';
+import EditAvailability from './EditAvailability';
 import Modal from 'react-native-modal';
 import {AuthContext} from '../context';
 import { InfoCard } from './UserDetail';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
+type ratingType = Array<{
+  raterName: string,
+  rating: number
+}>; 
+
 export default function Profile() {
+  const [uName, setUName] = useState<string>('');
+  const [uRole, setURole] = useState<string>('');
+  const [uGender, setUGender] = useState<string>('');
+  const [uDob, setUDob] = useState<string>('');
+  const [uPhone, setUPhone] = useState<string>('');
+  const [uMail, setUMail] = useState<string>('');
+  const [uDress, setUDress] = useState<string>('');
+  const [star, setStar] = useState<ratingType>();
+  const [availabilite, setAvailabilite] = useState<string>('');
   const [modalProfile, setModalProfile] = useState<boolean>(false);
   const [modalSecurite, setModalSecurite] = useState<boolean>(false);
+  const [modalAvail, setModalAvail] = useState<boolean>(false);
   const [modalDes, setModalDes] = useState<boolean>(false);
   const [inputBorder, setInputBorder] = useState<boolean>(false);
   const [description, setDescription] = useState<string>('');
   const { signOut } = React.useContext(AuthContext);
+  const curUid: string|undefined = auth().currentUser?.uid;
+  const userRef = firestore().collection('users').doc(curUid);
+  
+  const toDate = (byou: number) => {
+    let time = new Date(1970, 0, 1);
+    time.setSeconds(byou);
+    return time;
+  };
+
+  useEffect(() => {
+    const fetchEmployee = async (eeID: string|undefined) => {
+      var employeeRef = firestore().collection('employees').doc(curUid);
+      var employeeInfo = await employeeRef.get();
+      if (!employeeInfo.exists){
+        console.log('Ne trouve pas les informations');
+      } else {
+        let res = employeeInfo.data();
+        if(res !== undefined) {
+          setStar(res.rating);
+          console.log(res.rating);
+          setAvailabilite(res.availability);
+        }
+      }
+    };
+    const fetchInfo = async () => {
+      var lmeo = await userRef.get();
+        if (!lmeo.exists){
+          console.log('aduma nogay gere');
+        } else {
+          // console.log('les doc: ', lmeo.data());
+          let res = lmeo.data();
+          if(res !== undefined){
+            if(res.role === 'Employee') fetchEmployee(curUid);
+            let fadd = res.address[0].addName;
+            let dal: Date = toDate(res.dob.seconds);
+            setUName(res.fname);
+            setURole(res.role.toUpperCase());
+            setUGender(res.gender.charAt(0).toUpperCase() + res.gender.slice(1));
+            setUDob(dal.getDate() + '/' + (dal.getMonth() + 1) + '/' + dal.getFullYear());
+            setUPhone(res.pnumber);
+            setUMail(res.email);
+            setUDress(fadd.homeNumber + ', ' + fadd.ward + ', ' + fadd.district + ', ' + fadd.province);
+            setDescription(res.description);
+          }
+        } 
+      };
+      fetchInfo();
+  }, []);
 
   const __doSignOut = async () => {
     try{
-        let response = await auth()
+        await auth()
           .signOut()
           .then(() => signOut && signOut());
+        await AsyncStorage.clear()
+        .catch(e => console.log(e.message));
     } catch (e){
       console.log(e.message);
     }
@@ -55,23 +123,44 @@ export default function Profile() {
               style={styles.userImage}
             />
             <View style={styles.infoCol}>
-              <Text style={[styles.headerTitle, {fontSize: 30}]}>Misaka Mikoto</Text>
+              <Text style={[styles.headerTitle, {fontSize: 30}]}>{uName}</Text>
               <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                 <View style={styles.userStatusBorder}>
-                  <Text style={styles.userRole}>EMPLOYER</Text>
+                  <Text style={styles.userRole}>{uRole}</Text>
                 </View>
               </View>        
             </View>
           </View>
+          {
+            uRole === 'EMPLOYEE'
+            ? (
+              <View style={styles.outterBasicInfo}>
+                <View style={styles.basicInfo}>
+                  <Text style={styles.basicTitle}>Average Rating</Text>
+                  <Text style={styles.basicDetail}>{
+                    star?.length == 0 ? 'N/A'
+                    : 'arimasu' 
+                  }</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.basicInfo}
+                  onPress={() => setModalAvail(!modalAvail)}  
+                 >
+                  <Text style={styles.basicTitle}>Availability</Text>
+                  <Text style={styles.basicDetail}>{availabilite}</Text>
+                </TouchableOpacity>
+              </View>
+            ) : null
+          }
           <View style={[styles.selfIntro, {marginBottom: 30}]}>
             <View style={{flexDirection: 'row'}}>
-              <InfoCard style={styles.infoCard} title="Sex" detail="Male" />
+              <InfoCard style={styles.infoCard} title="Sex" detail={uGender} />
               <View style={{width: '40%', height: 'auto'}} />
-              <InfoCard style={styles.infoCard} title="Date of Birth" detail="02/05/1994" />
+              <InfoCard style={styles.infoCard} title="Date of Birth" detail={uDob} />
             </View>
-            <InfoCard style={styles.infoCard} title="Phone Number" detail="0981273645" />
-            <InfoCard style={styles.infoCard} title="Email" detail="email@email.com" />
-            <InfoCard style={styles.infoCard} title="Address" detail="18 Hoang Quoc Viet, Nghia Do, Cau Giay, Hanoi" />
+            <InfoCard style={styles.infoCard} title="Phone Number" detail={uPhone} />
+            <InfoCard style={styles.infoCard} title="Email" detail={uMail} />
+            <InfoCard style={styles.infoCard} title="Address" detail={uDress} />
             <TouchableOpacity
               style={styles.cardButton}
               onPress={() => setModalProfile(!modalProfile)}
@@ -80,7 +169,7 @@ export default function Profile() {
             </TouchableOpacity>
           </View>
           <View style={styles.infoField}>
-            <Text style={styles.infoCard}>Account settings</Text>
+            <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>Account settings</Text>
             <TouchableOpacity
               style={styles.cardButton}
               onPress={() => setModalSecurite(!modalSecurite)}
@@ -177,7 +266,6 @@ export default function Profile() {
                 placeholderTextColor = {Grays.gray_0}
                 value={description}
                 multiline={true}
-                onChangeText={setDescription}
                 onFocus={() => setInputBorder(true)}
                 onBlur={() => setInputBorder(false)}
               />
@@ -189,6 +277,24 @@ export default function Profile() {
               <Text style={styles.buttonText}>Save</Text>
             </TouchableOpacity>
           </View>
+        </View>
+      </Modal>
+      <Modal
+        animationIn='fadeInUp'
+        animationOut='fadeOutDown'
+        style={{margin: 0}}
+        isVisible={modalAvail}>
+        <View style={styles.container}>
+          <View style={styles.upperBar}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => setModalAvail(!modalAvail)}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} color="white" size={20}/>
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Availabiliy</Text>
+          </View>
+          <EditAvailability />
         </View>
       </Modal>
     </View>
@@ -338,5 +444,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     backgroundColor: Grays.gray_button
+  },
+  outterBasicInfo: {
+    width: '100%',
+    height: 'auto',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  basicInfo: {
+    width: '45%',
+    height: 'auto',
+    backgroundColor: inBlack.black_2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 15,
+    paddingVertical: 10
+  },
+  basicTitle: {
+    fontSize: 18,
+    color: Grays.gray_1
+  },
+  basicDetail: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: 'white'
   },
 });
