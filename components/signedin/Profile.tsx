@@ -8,7 +8,8 @@ import {
   TextInput,
   StatusBar,
   StyleSheet,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 // import {HomeProps} from '../Routes';
@@ -47,6 +48,7 @@ export default function Profile() {
   const [modalDes, setModalDes] = useState<boolean>(false);
   const [inputBorder, setInputBorder] = useState<boolean>(false);
   const [description, setDescription] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
   const { signOut } = React.useContext(AuthContext);
   const curUid: string|undefined = auth().currentUser?.uid;
   const userRef = firestore().collection('users').doc(curUid);
@@ -58,7 +60,7 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    const fetchEmployee = async (eeID: string|undefined) => {
+    const fetchEmployee = async () => {
       var employeeRef = firestore().collection('employees').doc(curUid);
       var employeeInfo = await employeeRef.get();
       if (!employeeInfo.exists){
@@ -75,12 +77,14 @@ export default function Profile() {
     const fetchInfo = async () => {
       var lmeo = await userRef.get();
         if (!lmeo.exists){
+          setLoading(false);
           console.log('aduma nogay gere');
         } else {
           // console.log('les doc: ', lmeo.data());
           let res = lmeo.data();
           if(res !== undefined){
-            if(res.role === 'Employee') fetchEmployee(curUid);
+            setLoading(false);
+            if(res.role === 'Employee') fetchEmployee();
             let fadd = res.address[0].addName;
             let dal: Date = toDate(res.dob.seconds);
             setUName(res.fname);
@@ -295,6 +299,15 @@ export default function Profile() {
             <Text style={styles.headerTitle}>Availabiliy</Text>
           </View>
           <EditAvailability />
+        </View>
+      </Modal>
+      <Modal 
+        isVisible={loading}
+        animationIn='fadeIn'
+        animationOut='fadeOut'
+       >
+        <View>
+          <ActivityIndicator size='large' color='blue'/>
         </View>
       </Modal>
     </View>

@@ -14,6 +14,38 @@ import { Grays, Blues, inBlack } from '../Colors';
 import {Picker} from '@react-native-picker/picker';
 import { UserRoute, UsersListProps } from '../Routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+
+type fetchItemType = {
+  id: string,
+  data: {
+    email: string,
+    gender: string, 
+    pnumber: string,
+    description: string, 
+    dob: {
+      seconds: number,
+      nanoseconds: number
+    },
+    fname: string,
+    address: Array<{
+      addName: {
+        ward: string,
+        homeNumber: string,
+        district: string, 
+        province: string
+      },
+      homeCoor: {
+        lat: number,
+        lng: number
+      }
+    }>,
+    role: string
+  }
+}
+
+type responseType = Array<FirebaseFirestoreTypes.DocumentData>;
+
 
 const fakeInfo = [
   {
@@ -41,33 +73,52 @@ const fakeInfo = [
 
 export default function UsersList({route, navigation}: UsersListProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
+  const [dataList, setDataList] = useState<responseType>();
   const accStatus: string = 'user';
-  const renderUser = ({ item }: any) => (
-    <TouchableOpacity 
-      activeOpacity={0.8}
-      style={styles.userCard}
-      onPress={() => navigation.navigate(UserRoute.UserDetail)}
-    >
-      <Image 
-        source={require('../../assets/images/misaka.png')}
-        style={styles.userImage}
-      />
-      <View style={styles.infoArea}>
-        <Text style={styles.userName}>{item.fname}</Text>
-        <Text style={styles.userAddress}>{item.address}</Text>
-        {
-          accStatus === 'user' && 
-            <Text style={styles.userStatus}>{item.status}</Text>
-        }
-      </View>
-    </TouchableOpacity>
-  );
+  const renderUser = ({ item }: FirebaseFirestoreTypes.DocumentData) => {
+    let addRes = item.data.address[0].addName;
+    let fullAdd: string = 
+      addRes.homeNumber + ', ' 
+      + addRes.ward + ', ' 
+      + addRes.district + ', ' 
+      + addRes.province;
+    return (
+      <TouchableOpacity 
+        activeOpacity={0.8}
+        style={styles.userCard}
+        onPress={() => navigation.navigate(UserRoute.UserDetail)}
+      >
+        <Image 
+          source={require('../../assets/images/misaka.png')}
+          style={styles.userImage}
+        />
+        <View style={styles.infoArea}>
+          <Text style={styles.userName}>{item.data.fname}</Text>
+          <Text style={styles.userAddress}>{fullAdd}</Text>
+          {
+            accStatus === 'user' && 
+              <Text style={styles.userStatus}>{accStatus}</Text>
+          }
+        </View>
+      </TouchableOpacity>
+  )};
+
   useEffect(() => {
+    var userRef = firestore().collection("users");
     const getData = async () => {
       try {
-        const value = await AsyncStorage.getItem('userRole')
-        if(value !== null) {
-          console.log('List role: ', value);
+        // const value = await AsyncStorage.getItem('userRole')
+        var query = await userRef.where("role", "==", "Employee").get();
+        var tempData: responseType = [];
+        if(!query.empty) {
+          query.forEach(doc => {
+            let newData: FirebaseFirestoreTypes.DocumentData = {
+              id: doc.id,
+              data: doc.data()
+            };
+            tempData.push(newData);
+          });
+          setDataList(tempData);
           // value previously stored
           //setstate would be here soon
         }
@@ -102,7 +153,7 @@ export default function UsersList({route, navigation}: UsersListProps) {
             </View>
           </View>
           <FlatList
-            data={fakeInfo}
+            data={dataList}
             renderItem={renderUser}
             keyExtractor={item => item.id}
           />
