@@ -1,3 +1,4 @@
+import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
@@ -59,7 +60,7 @@ export type AuthStackParamList = {
 
 export type UserStackParamList = {
   [UserRoute.UsersList]: undefined,
-  [UserRoute.UserDetail]: undefined,
+  [UserRoute.UserDetail]: FirebaseFirestoreTypes.DocumentData,
 }
 
 type LoadingScreenRouteProp = RouteProp<AppStackParamList, AppRoutes.LoadingScreen>;

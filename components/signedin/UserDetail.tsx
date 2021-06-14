@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import Inbox from './Inbox';
 import { Blues, Grays, inBlack } from '../Colors';
 import { lorem } from './Profile';
 import Modal from 'react-native-modal';
+import firestore from '@react-native-firebase/firestore';
+import {toDate, ratingType} from './Profile';
 
 export const InfoCard = ({title, detail, style}: any) => (
   <View style={{...style}}>
@@ -28,6 +30,40 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [ratingModal, setRatingModal] = useState<boolean>(false);
   const [ratingValue, setRatingValue] = useState<number>(0);
+  const [star, setStar] = useState<ratingType>();
+  const [availabilite, setAvailabilite] = useState<string>('');
+  const passData = route.params.data;
+  const passAddr = passData.address[0].addName;
+  const guessID: string = route.params.id; 
+  const guessName: string = passData.fname;
+  const guessRole : string= passData.role;
+  const guessGender: string = passData.gender.charAt(0).toUpperCase() + passData.gender.slice(1);
+  const guessDate : Date = toDate(passData.dob.seconds);
+  const guessAge: number = new Date().getFullYear() -  guessDate.getFullYear();
+  const guessPhone: string = passData.pnumber;
+  const guessMail: string = passData.email;
+  const guessAddr: string = passAddr.homeNumber + ', ' 
+                              + passAddr.ward + ', ' 
+                              + passAddr.district + ', ' 
+                              + passAddr.province; 
+  console.log(JSON.stringify(passData));
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      var employeeRef = firestore().collection('employees').doc(guessID);
+      var employeeInfo = await employeeRef.get();
+      if (!employeeInfo.exists){
+        console.log('Ne trouve pas les informations');
+      } else {
+        let res = employeeInfo.data();
+        if(res !== undefined) {
+          setStar(res.rating);
+          console.log(res.rating);
+          setAvailabilite(res.availability);
+        }
+      }
+    };
+    fetchEmployee();
+  }, [])
   return (
     <View style={styles.container}>
       <View style={styles.upperBar}>
@@ -47,9 +83,9 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
               style={styles.userImage}
             />
             <View style={styles.infoCol}>
-              <Text style={[styles.headerTitle, {fontSize: 30}]}>Misaka Mikoto</Text>
+              <Text style={[styles.headerTitle, {fontSize: 30}]}>{guessName}</Text>
               <View style={styles.userStatusBorder}>
-                <Text style={styles.userRole}>EMPLOYER</Text>
+                <Text style={styles.userRole}>{guessRole}</Text>
               </View>
               <View style={styles.optionButtons}>
                 <TouchableOpacity
@@ -71,11 +107,14 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
           <View style={styles.outterBasicInfo}>
             <View style={styles.basicInfo}>
               <Text style={styles.basicTitle}>Average Rating</Text>
-              <Text style={styles.basicDetail}>4.5/5</Text>
+              <Text style={styles.basicDetail}>{
+                star?.length == 0 ? 'N/A'
+                : 'arimasu' 
+              }</Text>
             </View>
             <View style={styles.basicInfo}>
               <Text style={styles.basicTitle}>Availability</Text>
-              <Text style={styles.basicDetail}>Part-time</Text>
+              <Text style={styles.basicDetail}>{availabilite}</Text>
             </View>
           </View>
           <View style={styles.selfIntro}>
@@ -84,13 +123,13 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
           </View>
           <View style={[styles.selfIntro, {marginBottom: 30}]}>
             <View style={{flexDirection: 'row'}}>
-              <InfoCard style={styles.infoCard} title="Sex" detail="Male" />
+              <InfoCard style={styles.infoCard} title="Sex" detail={guessGender} />
               <View style={{width: '40%', height: 'auto'}} />
-              <InfoCard style={styles.infoCard} title="Age" detail="18" />
+              <InfoCard style={styles.infoCard} title="Age" detail={guessAge} />
             </View>
-            <InfoCard style={styles.infoCard} title="Phone Number" detail="0981273645" />
-            <InfoCard style={styles.infoCard} title="Email" detail="email@email.com" />
-            <InfoCard style={styles.infoCard} title="Address" detail="18 Hoang Quoc Viet, Nghia Do, Cau Giay, Hanoi" />
+            <InfoCard style={styles.infoCard} title="Phone Number" detail={guessPhone} />
+            <InfoCard style={styles.infoCard} title="Email" detail={guessMail} />
+            <InfoCard style={styles.infoCard} title="Address" detail={guessAddr} />
           </View>
         </ScrollView>
         <Modal

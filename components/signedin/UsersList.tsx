@@ -7,6 +7,7 @@ import {
   StatusBar,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -15,6 +16,7 @@ import {Picker} from '@react-native-picker/picker';
 import { UserRoute, UsersListProps } from '../Routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import Modal from 'react-native-modal';
 
 type fetchItemType = {
   id: string,
@@ -74,6 +76,7 @@ const fakeInfo = [
 export default function UsersList({route, navigation}: UsersListProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
   const [dataList, setDataList] = useState<responseType>();
+  const [loading, setLoading] = useState<boolean>(true);
   const accStatus: string = 'user';
   const renderUser = ({ item }: FirebaseFirestoreTypes.DocumentData) => {
     let addRes = item.data.address[0].addName;
@@ -86,7 +89,7 @@ export default function UsersList({route, navigation}: UsersListProps) {
       <TouchableOpacity 
         activeOpacity={0.8}
         style={styles.userCard}
-        onPress={() => navigation.navigate(UserRoute.UserDetail)}
+        onPress={() => navigation.navigate(UserRoute.UserDetail, item)}
       >
         <Image 
           source={require('../../assets/images/misaka.png')}
@@ -119,6 +122,7 @@ export default function UsersList({route, navigation}: UsersListProps) {
             tempData.push(newData);
           });
           setDataList(tempData);
+          setLoading(false);
           // value previously stored
           //setstate would be here soon
         }
@@ -158,6 +162,15 @@ export default function UsersList({route, navigation}: UsersListProps) {
             keyExtractor={item => item.id}
           />
       </View>
+      <Modal
+        isVisible={loading}
+        animationIn='fadeIn'
+        animationOut='fadeOut'
+      >
+        <View>
+          <ActivityIndicator size='large' color='blue' />
+        </View>
+      </Modal>
     </View>
   );
 }

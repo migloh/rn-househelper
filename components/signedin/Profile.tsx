@@ -27,10 +27,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-type ratingType = Array<{
+export type ratingType = Array<{
   raterName: string,
   rating: number
 }>; 
+
+export const toDate = (byou: number) => {
+  let time = new Date(1970, 0, 1);
+  time.setSeconds(byou);
+  return time;
+};
 
 export default function Profile() {
   const [uName, setUName] = useState<string>('');
@@ -53,12 +59,6 @@ export default function Profile() {
   const curUid: string|undefined = auth().currentUser?.uid;
   const userRef = firestore().collection('users').doc(curUid);
   
-  const toDate = (byou: number) => {
-    let time = new Date(1970, 0, 1);
-    time.setSeconds(byou);
-    return time;
-  };
-
   useEffect(() => {
     const fetchEmployee = async () => {
       var employeeRef = firestore().collection('employees').doc(curUid);
