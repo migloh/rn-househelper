@@ -69,20 +69,30 @@ export default function Messages() {
   const [inboxID, setInboxID] = useState<string>();
   const [headerName, setHeaderName] = useState<string>('');
   useEffect(() => {
-    const getMessage = async () => {
-      try{
-        var returned = await firestore()
-          .collection('userMessages')
-          .doc(currentUid)
-          .get();
-        // console.log('BTCBTC: ', JSON.stringify(returned.data().messageList));
-        if (returned.data() !== undefined) setMessageList(returned.data()?.messageList);
-      } catch(e) {
-        console.log(e.message);
-      }
-    };
-    getMessage();
-  }, []);
+    // const getMessage = async () => {
+    //   try{
+    //     var returned = await firestore()
+    //       .collection('userMessages')
+    //       .doc(currentUid)
+    //       .get();
+    //     // console.log('BTCBTC: ', JSON.stringify(returned.data().messageList));
+    //     if (returned.data() !== undefined) setMessageList(returned.data()?.messageList);
+    //   } catch(e) {
+    //     console.log(e.message);
+    //   }
+    // };
+    // getMessage();
+    const subscriber = firestore()
+    .collection('userMessages')
+    .doc(currentUid)
+    .onSnapshot(documentSnapshot => {
+      console.log('User data: ', JSON.stringify(documentSnapshot.data()));
+      setMessageList(documentSnapshot.data()?.messageList);
+    });
+
+    // Stop listening for updates when no longer required
+    return () => subscriber();
+  }, [currentUid]);
   const renderUser = ({ item }: any) => {
     var senderName: string = '';
     var listVar: any = item.participants;
@@ -91,7 +101,7 @@ export default function Messages() {
       if(`${listVar[property].id}` !== currentUid) {
         senderName = `${listVar[property].fname}`
         console.log('sendername: ', senderName);
-        setTimeout(() => setHeaderName(senderName), 0);
+        // setTimeout(() => setHeaderName(senderName), 0);
       }
     }
     return (
@@ -105,6 +115,7 @@ export default function Messages() {
           : styles.userCard
         }
         onPress={() => {
+          setHeaderName(senderName);
           setInboxID(item.messageID);
           setMessageVisible(!messageVisible)
         }}

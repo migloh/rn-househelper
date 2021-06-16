@@ -48,36 +48,11 @@ type fetchItemType = {
 
 type responseType = Array<FirebaseFirestoreTypes.DocumentData>;
 
-
-const fakeInfo = [
-  {
-    id: '1',
-    image: require('../../assets/images/misaka.png'),
-    fname: 'Misaka Mikoto',
-    address: '18 Hoang Quoc Viet, Nghia Do, Cau Giay, Hanoi',
-    status: 'Part-time',
-  },
-  {
-    id: '2',
-    image: require('../../assets/images/misaka.png'),
-    fname: 'Misaka Mikoto',
-    address: '18 Hoang Quoc Viet, Nghia Do, Cau Giay, Hanoi',
-    status: 'Part-time'
-  },
-  {
-    id: '3',
-    image: require('../../assets/images/misaka.png'),
-    fname: 'Misaka Mikoto',
-    address: '18 Hoang Quoc Viet, Nghia Do, Cau Giay, Hanoi',
-    status: 'Part-time'
-  },
-];
-
 export default function UsersList({route, navigation}: UsersListProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
   const [dataList, setDataList] = useState<responseType>();
   const [loading, setLoading] = useState<boolean>(true);
-  const accStatus: string = 'user';
+  const [currentRole, setCurrentRole] = useState<string>('');
   const renderUser = ({ item }: FirebaseFirestoreTypes.DocumentData) => {
     let addRes = item.data.address[0].addName;
     let fullAdd: string = 
@@ -98,20 +73,37 @@ export default function UsersList({route, navigation}: UsersListProps) {
         <View style={styles.infoArea}>
           <Text style={styles.userName}>{item.data.fname}</Text>
           <Text style={styles.userAddress}>{fullAdd}</Text>
-          {
+          {/* {
             accStatus === 'user' && 
               <Text style={styles.userStatus}>{accStatus}</Text>
-          }
+          } */}
         </View>
       </TouchableOpacity>
   )};
 
   useEffect(() => {
+    const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('userRole')
+      if(value !== null) {
+        // value previously stored
+        console.log('get role ok: ', value);
+        if (value == 'Employee') setCurrentRole('Employer');
+        else setCurrentRole('Employee')
+      }
+    } catch(e) {
+      // error reading value
+      console.log('error in getting role: ', e.message);
+    }
+    };
+    getData();
+  }, []);
+
+  useEffect(() => {
     var userRef = firestore().collection("users");
     const getData = async () => {
       try {
-        // const value = await AsyncStorage.getItem('userRole')
-        var query = await userRef.where("role", "==", "Employee").get();
+        var query = await userRef.where("role", "==", currentRole).get();
         var tempData: responseType = [];
         if(!query.empty) {
           query.forEach(doc => {

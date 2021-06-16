@@ -30,7 +30,7 @@ const Transmit = ({item}: any) => (
   <View style={styles.transmitter}>
     <TouchableOpacity
       activeOpacity={0.9}
-      onLongPress={() => Alert.alert('Timestamp', JSON.stringify(item.timestamp))}
+      onLongPress={() => Alert.alert('Timestamp', JSON.stringify(item.timestamp) + '\nsender: ' + JSON.stringify(item.senderID))}
       style={
         item.senderID === currentUid 
         ? styles.isSender 
@@ -68,13 +68,6 @@ export default function Inbox ({iid}: inboxType) {
     } 
   };
   useEffect(() => {
-    // const onValChange = database()
-    //   .ref('/utilisateur/id/contents')
-    //   .on('value', snap =>{ 
-    //     console.log('les snap: ', JSON.stringify(snap.val()));
-    //     getMessBatch(snap.val());
-    //     });
-    // return () => database().ref('/utilisateur/id/contents').off('value', onValChange);
     const subscriber = firestore()
       .collection('messages')
       .doc(inboxID)

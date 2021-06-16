@@ -197,19 +197,25 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
               </View>
             </View>
           </View>
-          <View style={styles.outterBasicInfo}>
-            <View style={styles.basicInfo}>
-              <Text style={styles.basicTitle}>Average Rating</Text>
-              <Text style={styles.basicDetail}>{
-                star?.length == 0 ? 'N/A'
-                : 'arimasu' 
-              }</Text>
-            </View>
-            <View style={styles.basicInfo}>
-              <Text style={styles.basicTitle}>Availability</Text>
-              <Text style={styles.basicDetail}>{availabilite}</Text>
-            </View>
-          </View>
+          {
+            guessRole == 'Employee'
+            ? (
+              <View style={styles.outterBasicInfo}>
+                <View style={styles.basicInfo}>
+                  <Text style={styles.basicTitle}>Average Rating</Text>
+                  <Text style={styles.basicDetail}>{
+                    star?.length == 0 ? 'N/A'
+                    : 'arimasu' 
+                  }</Text>
+                </View>
+                <View style={styles.basicInfo}>
+                  <Text style={styles.basicTitle}>Availability</Text>
+                  <Text style={styles.basicDetail}>{availabilite}</Text>
+                </View>
+              </View>
+            )
+            : null
+          }
           <View style={styles.selfIntro}>
             <Text style={styles.selfIntroTitle}>Self Introduction</Text>
             <Text style={styles.selfIntroContent}>{lorem}</Text>
