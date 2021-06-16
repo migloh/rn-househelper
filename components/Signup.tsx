@@ -41,7 +41,7 @@ export type wardType = Array<{
   'pre': string
 }>;
 
-type CoordinateType = {
+export type CoordinateType = {
   lat: number,
   lng: number
 };

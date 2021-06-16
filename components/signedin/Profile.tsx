@@ -3,23 +3,21 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Alert,
   Image,
-  TextInput,
   StatusBar,
   StyleSheet,
   ScrollView,
   ActivityIndicator
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
-// import {HomeProps} from '../Routes';
 import {Blues, Grays, inBlack} from '../Colors';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faCoffee, faChevronLeft, faAppleAlt, fas} from '@fortawesome/free-solid-svg-icons'
+import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
 import EditProfile from './EditProfile';
 import EditAccount from './EditAccount';
 import EditAvailability from './EditAvailability';
+import EditDescription from './EditDescription';
 import Modal from 'react-native-modal';
 import {AuthContext} from '../context';
 import { InfoCard } from './UserDetail';
@@ -52,9 +50,9 @@ export default function Profile() {
   const [modalSecurite, setModalSecurite] = useState<boolean>(false);
   const [modalAvail, setModalAvail] = useState<boolean>(false);
   const [modalDes, setModalDes] = useState<boolean>(false);
-  const [inputBorder, setInputBorder] = useState<boolean>(false);
   const [description, setDescription] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
+  const [fullData, setFullData] = useState<FirebaseFirestoreTypes.DocumentData>();
   const { signOut } = React.useContext(AuthContext);
   const curUid: string|undefined = auth().currentUser?.uid;
   const userRef = firestore().collection('users').doc(curUid);
@@ -84,6 +82,7 @@ export default function Profile() {
           let res = lmeo.data();
           if(res !== undefined){
             setLoading(false);
+            setFullData(res);
             if(res.role === 'Employee') fetchEmployee();
             let fadd = res.address[0].addName;
             let dal: Date = toDate(res.dob.seconds);
@@ -223,7 +222,7 @@ export default function Profile() {
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Personal</Text>
           </View>
-          <EditProfile />
+          <EditProfile data={fullData}/>
         </View>
       </Modal>
       <Modal
@@ -259,28 +258,9 @@ export default function Profile() {
             >
               <FontAwesomeIcon icon={faChevronLeft} color="white" size={20}/>
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Account</Text>
+            <Text style={styles.headerTitle}>Description</Text>
           </View>
-          <View style={[styles.container, {paddingHorizontal: 15}]}>
-            <Text style={styles.inputTitle}>Edit description</Text>
-            <View style={[styles.inputArea, {borderColor: inputBorder == true ? Blues.blue_2 : Grays.gray_2, height: 'auto' }]}>
-              <TextInput 
-                style={styles.textInput}
-                placeholder= "Your description..." 
-                placeholderTextColor = {Grays.gray_0}
-                value={description}
-                multiline={true}
-                onFocus={() => setInputBorder(true)}
-                onBlur={() => setInputBorder(false)}
-              />
-            </View>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setModalDes(!modalDes)}
-            >
-              <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
+          <EditDescription />
         </View>
       </Modal>
       <Modal
