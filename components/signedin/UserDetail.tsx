@@ -46,7 +46,8 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
   var guessName: string = passData.fname;
   var guessRole : string= passData.role;
   var guessGender: string = passData.gender.charAt(0).toUpperCase() + passData.gender.slice(1);
-  var guessDate : Date = toDate(passData.dob.seconds);
+  var guessDate: Date = toDate(passData.dob.seconds);
+  var guessDescription: string = passData.description;
   var guessAge: number = new Date().getFullYear() -  guessDate.getFullYear();
   var guessPhone: string = passData.pnumber;
   var guessMail: string = passData.email;
@@ -218,7 +219,11 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
           }
           <View style={styles.selfIntro}>
             <Text style={styles.selfIntroTitle}>Self Introduction</Text>
-            <Text style={styles.selfIntroContent}>{lorem}</Text>
+            <Text style={styles.selfIntroContent}>{
+              guessDescription == ''
+              ? 'Nothing to display'
+              : guessDescription
+            }</Text>
           </View>
           <View style={[styles.selfIntro, {marginBottom: 30}]}>
             <View style={{flexDirection: 'row'}}>

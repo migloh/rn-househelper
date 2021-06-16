@@ -24,45 +24,6 @@ var currentUid: string|undefined = auth().currentUser?.uid;
 
 const windowWidth : number = Dimensions.get('window').width;
 
-const fakeMessage = [
-  {
-    id: '1',
-    image: require('../../assets/images/misaka.png'),
-    fname: 'Misaka Mikoto',
-    latest: 'New message un',
-  },
-  {
-    id: '2',
-    image: require('../../assets/images/misaka.png'),
-    fname: 'Misaka Mikoto',
-    latest: 'new message deux',
-  },
-  {
-    id: '3',
-    image: require('../../assets/images/misaka.png'),
-    fname: 'Misaka Mikoto',
-    latest: 'New message trois',
-  },
-  {
-    id: '4',
-    image: require('../../assets/images/misaka.png'),
-    fname: 'Misaka Mikoto',
-    latest: 'New message trois',
-  },
-  {
-    id: '5',
-    image: require('../../assets/images/misaka.png'),
-    fname: 'Misaka Mikoto',
-    latest: 'New message trois',
-  },
-  {
-    id: '6',
-    image: require('../../assets/images/misaka.png'),
-    fname: 'Misaka Mikoto',
-    latest: 'New message trois',
-  }
-];
-
 export default function Messages() {
   const [messageVisible, setMessageVisible] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<any>();
@@ -108,11 +69,12 @@ export default function Messages() {
       <TouchableOpacity 
         activeOpacity={0.8}
         style={
-          item == fakeMessage[0] 
-          ? styles.userCardFirst 
-          : item == fakeMessage[fakeMessage.length - 1] 
-          ? styles.userCardLast 
-          : styles.userCard
+          // item == fakeMessage[0] 
+          // ? styles.userCardFirst 
+          // : item == fakeMessage[fakeMessage.length - 1] 
+          // ? styles.userCardLast 
+          // : styles.userCard
+          styles.userCard
         }
         onPress={() => {
           setHeaderName(senderName);

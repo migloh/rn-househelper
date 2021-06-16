@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View, 
   Text,
@@ -6,10 +6,13 @@ import {
   StyleSheet
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import {Blues, Grays} from '../Colors';
+import {Blues, Grays, mapStyle} from '../Colors';
 import GetLocation from 'react-native-get-location'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHandSparkles, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import {responseType} from './UsersList';
 
 export default function Locations() {
   const [region, setRegion] = useState<Region | undefined>({
@@ -18,6 +21,9 @@ export default function Locations() {
     latitudeDelta: 0.212280,
     longitudeDelta: 0.142128,
   });
+  const [dataList, setDataList] = useState<responseType>();
+  // const [loading, setLoading] = useState<boolean>(true);
+  const [currentRole, setCurrentRole] = useState<string>('');
   const mapRef = useRef<MapView>(null);
   const latlog = [
     {
@@ -54,6 +60,49 @@ export default function Locations() {
     }
 
   ];
+  useEffect(() => {
+    const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('userRole')
+      if(value !== null) {
+        // value previously stored
+        console.log('get role ok: ', value);
+        if (value == 'Employee') setCurrentRole('Employer');
+        else setCurrentRole('Employee')
+      }
+    } catch(e) {
+      // error reading value
+      console.log('error in getting role: ', e.message);
+    }
+    };
+    getData();
+  }, []);
+
+  useEffect(() => {
+    var userRef = firestore().collection("users");
+    const getData = async () => {
+      try {
+        var query = await userRef.where("role", "==", currentRole).get();
+        var tempData: responseType = [];
+        if(!query.empty) {
+          query.forEach(doc => {
+            let newData: FirebaseFirestoreTypes.DocumentData = {
+              id: doc.id,
+              data: doc.data()
+            };
+            tempData.push(newData);
+          });
+          setDataList(tempData);
+          // setLoading(false);
+        }
+      } catch(e) {
+        // error reading value
+        console.log(e.message);
+      }
+    };
+    getData();
+  }), [];
+
   return (
     <View style={styles.container}>
       <View style={styles.upperBar}>
@@ -70,12 +119,19 @@ export default function Locations() {
         showsUserLocation={true}
         customMapStyle={mapStyle}
       >
-        {latlog.map((marker, index) => (
+        {dataList!= undefined && dataList.map((marker, index) => (
           <Marker
             key={index}
-            coordinate={marker.coor}
-            title={marker.title}
-            description={marker.description}
+            // coordinate={marker.data.address[0].homeCoor}
+            coordinate={{
+              latitude: marker.data.address[0].homeCoor.lat,
+              longitude: marker.data.address[0].homeCoor.lng
+            }}
+            title={marker.data.fname}
+            description={
+              marker.data.address[0].addName.district + ', '
+              + marker.data.address[0].addName.province
+            }
           >
             <View style={{width: 30, height: 30, justifyContent: 'center', alignItems: 'center'}}>
               <FontAwesomeIcon icon={faHandSparkles} color={Blues.blue_3} size={30}/>
@@ -147,165 +203,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, 
   },
 });
-
-const mapStyle = [
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#242f3e"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#746855"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#242f3e"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.locality",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#263c3f"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#6b9a76"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#38414e"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#212a37"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9ca5b3"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#746855"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#1f2835"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#f3d19c"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#2f3948"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#17263c"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#515c6d"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#17263c"
-      }
-    ]
-  }
-];

@@ -18,35 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import Modal from 'react-native-modal';
 
-type fetchItemType = {
-  id: string,
-  data: {
-    email: string,
-    gender: string, 
-    pnumber: string,
-    description: string, 
-    dob: {
-      seconds: number,
-      nanoseconds: number
-    },
-    fname: string,
-    address: Array<{
-      addName: {
-        ward: string,
-        homeNumber: string,
-        district: string, 
-        province: string
-      },
-      homeCoor: {
-        lat: number,
-        lng: number
-      }
-    }>,
-    role: string
-  }
-}
-
-type responseType = Array<FirebaseFirestoreTypes.DocumentData>;
+export type responseType = Array<FirebaseFirestoreTypes.DocumentData>;
 
 export default function UsersList({route, navigation}: UsersListProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
@@ -115,8 +87,6 @@ export default function UsersList({route, navigation}: UsersListProps) {
           });
           setDataList(tempData);
           setLoading(false);
-          // value previously stored
-          //setstate would be here soon
         }
       } catch(e) {
         // error reading value

@@ -81,12 +81,6 @@ export default function Inbox ({iid}: inboxType) {
   }, [])
   return (
     <View style={styles.container}>
-      {/* <ScrollView style={styles.messageArea}>
-        <Transmit message="Lorem day fdsaa fa fa afas das fs sfsadfsafsadfsadf sadf sdf sadf sda fasd fasd fas fd" sender={1} />
-        <Transmit message="Lorem da" sender={1} />
-        <Transmit message="Lorem da" sender={1} />
-        <Transmit message="Lorem da" sender={0} />
-        <Transmit message="Lorem da" sender={0} /> */}
         <FlatList
           style={styles.messageArea}
           data={messBatch}
@@ -96,7 +90,6 @@ export default function Inbox ({iid}: inboxType) {
           // onContentSizeChange={() => yourRef?.current?.scrollToEnd() }
           // onLayout={() => yourRef?.current?.scrollToEnd() }
         />
-      {/* </ScrollView> */}
       <View style={styles.messageBar}>
         <TextInput
           style={styles.messageInput}
