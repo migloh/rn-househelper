@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
   ScrollView,
   Alert,
   StatusBar
@@ -21,6 +22,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import DatePicker from 'react-native-date-picker';
+import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { API_GEO, baseUrl, hostUrl } from '../notgood/geocodingAPI';
 import {switchProvince} from '../assets/vietnam_dataset/province';
@@ -58,15 +60,24 @@ export default function Signup({route, navigation}: SignupProps) {
   const [inputBorderAddr, setInputBorderAddr] = useState<boolean>(false)
   const [role, setRole] = useState<string>('');
   const [gender, setGender] = useState<string>('none');
-  const [availabilite, setAvailabilite] = useState<string>('none');
-  const [province, setProvince] = useState<string>('none');
+  const [availabilite, setAvailabilite] = useState<string>('');
+  const [province, setProvince] = useState<string>('');
   const [districtList, setDistrictList] = useState<districtType>([]);
-  const [district, setDistrict] = useState<string>('none');
+  const [district, setDistrict] = useState<string>('');
   const [wardList, setWardList] = useState<wardType>([]);
-  const [ward, setWard] = useState<string>('none');
+  const [ward, setWard] = useState<string>('');
   const [homeAdd, setHomeAdd] = useState<string>('');
   const [queryStt, setQueryStt] = useState<boolean>(false);
   const [addCoor, setAddCoor] = useState<CoordinateType|undefined>();
+  const [loading, setLoading] = useState<boolean>(false)
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
+
+  const prv = require('../assets/vietnam_dataset/Index.json');
+
+  const mailCond = /^[a-zA-Z0-9\._]{3,50}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,1}$/;
+
+  var fullAdd: string = homeAdd + ', ' + ward + ', ' + district + ', ' + province;
+
   const queryCoor = async ( adrs: string ) => { 
     const dataInput: AxiosProxyConfig = {
       method: 'GET',
@@ -81,17 +92,15 @@ export default function Signup({route, navigation}: SignupProps) {
     await axios.request(dataInput).then(function (response: any) {
       console.log(JSON.stringify(response.data));
       setAddCoor(response.data.results[0].geometry.location)
-      Alert.alert('Query done', 'Mission success!');
+      setQueryStt(true);
+      setLoading(false);
+      Alert.alert('Query done', 'Query success!');
     }).catch(function (error: any) {
+      setLoading(false);
+      Alert.alert('Error', error);
       console.error(error);
     });
   }
-
-  const prv = require('../assets/vietnam_dataset/Index.json');
-
-  const mailCond = /^[a-zA-Z0-9\._]{3,50}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,1}$/;
-
-  var fullAdd: string = homeAdd + ', ' + ward + ', ' + district + ', ' + province;
 
   const __doCreateUser = async (
     lmail: string, 
@@ -146,6 +155,7 @@ export default function Signup({route, navigation}: SignupProps) {
             rating: []
           })
         }
+        setLoading(false);
         navigation.navigate(AuthRoutes.Login);
       }
     } catch (e) {
@@ -154,6 +164,24 @@ export default function Signup({route, navigation}: SignupProps) {
     }
   }
 
+  const onClickSignUp = () =>  {
+    setLoadingButton(true);
+    if (role === 'Employee' && availabilite === '') Alert.alert('Warning!', 'Please check your availability!');
+    else if (queryStt === false) Alert.alert('Warning!', 'Please query your address first!');
+    else if(
+      fname === '' || 
+      gender === '' || 
+      phone === '' || 
+      mail === '' || 
+      pass === '' || 
+      role === '' || 
+      province === '' || 
+      district === '' || 
+      ward === '' || 
+      homeAdd === ''
+    ) Alert.alert("Warning", "Empty string")
+    else __doCreateUser(mail, pass, fname, gender, dob, phone, role, availabilite, province, district, ward, homeAdd, addCoor);
+  }
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="black" />
@@ -201,13 +229,13 @@ export default function Signup({route, navigation}: SignupProps) {
           <Text style={styles.inputTitle}>Gender</Text>
           <View style={[styles.inputArea, {paddingHorizontal: 0}]}>
             <Picker
-              style={gender === 'none' ? styles.pickerNone : styles.pickerPicked}
+              style={gender === '' ? styles.pickerNone : styles.pickerPicked}
               selectedValue={gender}
               dropdownIconColor={Grays.gray_0}
               onValueChange={(itemValue, itemIndex) =>
                 setGender(itemValue)
               }>
-              <Picker.Item label="Choose one" value="none" />
+              <Picker.Item label="Choose one" value="" />
               <Picker.Item label="Male" value="male" />
               <Picker.Item label="Female" value="female" />
               <Picker.Item label="Other" value="other" />
@@ -294,13 +322,13 @@ export default function Signup({route, navigation}: SignupProps) {
           <Text style={styles.inputTitle}>What do you want to be?</Text>
           <View style={[styles.inputArea, {paddingHorizontal: 0}]}>
             <Picker
-              style={role === 'none' ? styles.pickerNone : styles.pickerPicked}
+              style={role === '' ? styles.pickerNone : styles.pickerPicked}
               selectedValue={role}
               dropdownIconColor={Grays.gray_0}
               onValueChange={(itemValue, itemIndex) =>
                 setRole(itemValue)
               }>
-              <Picker.Item label="Choose one" value="none" />
+              <Picker.Item label="Choose one" value="" />
               <Picker.Item label="Employee" value="Employee" />
               <Picker.Item label="Employer" value="Employer" />
             </Picker>
@@ -312,13 +340,13 @@ export default function Signup({route, navigation}: SignupProps) {
                 <Text style={styles.inputTitle}>Availability</Text>
                 <View style={[styles.inputArea, {paddingHorizontal: 0}]}>
                   <Picker
-                    style={availabilite === 'none' ? styles.pickerNone : styles.pickerPicked}
+                    style={availabilite === '' ? styles.pickerNone : styles.pickerPicked}
                     selectedValue={availabilite}
                     dropdownIconColor={Grays.gray_0}
                     onValueChange={(itemValue, itemIndex) =>
                       setAvailabilite(itemValue)
                     }>
-                    <Picker.Item label="Choose one" value="none" />
+                    <Picker.Item label="Choose one" value="" />
                     <Picker.Item label="Not available" value="na" />
                     <Picker.Item label="Part-time" value="Part-time" />
                     <Picker.Item label="Full-time" value="Full-time" />
@@ -339,13 +367,13 @@ export default function Signup({route, navigation}: SignupProps) {
                 setProvince(itemValue.city);
                 console.log(itemValue.code);
                 setWardList([]);
-                setDistrict('none');
-                setWard('none');
+                setDistrict('');
+                setWard('');
                 let lmeo = switchProvince(itemValue.code);
                 if(lmeo == undefined) setDistrictList([]);
                 else setDistrictList(lmeo.district);
               }}>
-              <Picker.Item label="Choose one" value="none" />
+              <Picker.Item label="Choose one" value="" />
               {
                 prv.map((element: any, index: any) => (
                   <Picker.Item key={index} label={element.city} value={element} /> 
@@ -356,18 +384,18 @@ export default function Signup({route, navigation}: SignupProps) {
           <Text style={styles.inputTitle}>District</Text>
           <View style={[styles.inputArea, {paddingHorizontal: 0}]}>
             <Picker
-              style={district === 'none' ? styles.pickerNone : styles.pickerPicked}
+              style={district === '' ? styles.pickerNone : styles.pickerPicked}
               selectedValue={district}
               dropdownIconColor={Grays.gray_0}
               onValueChange={(itemValue, itemIndex) => {
                 setDistrict(itemValue);
                 setWardList([]);
-                setWard('none');
+                setWard('');
                 let res = districtList.find(element => element.name == itemValue);
                 if (res == undefined) setWardList([]);
                 else setWardList(res?.ward);
               }}>
-              <Picker.Item label="Choose one" value="none" />
+              <Picker.Item label="Choose one" value="" />
               {
                 districtList.length !== 0
                 ? districtList.map((item: any, index: any) => (
@@ -380,13 +408,13 @@ export default function Signup({route, navigation}: SignupProps) {
           <Text style={styles.inputTitle}>Ward</Text>
           <View style={[styles.inputArea, {paddingHorizontal: 0}]}>
             <Picker
-              style={ward === 'none' ? styles.pickerNone : styles.pickerPicked}
+              style={ward === '' ? styles.pickerNone : styles.pickerPicked}
               selectedValue={gender}
               dropdownIconColor={Grays.gray_0}
               onValueChange={(itemValue, itemIndex) =>
                 setWard(itemValue)
               }>
-              <Picker.Item label="Choose one" value="none" />
+              <Picker.Item label="Choose one" value="" />
               {
                 wardList.length !== 0
                 ? wardList.map((item: any, index: any) => (
@@ -406,31 +434,40 @@ export default function Signup({route, navigation}: SignupProps) {
               value={homeAdd}
               onChangeText={(kotoba) => {
                 setHomeAdd(kotoba);
-                if (kotoba !== '') setQueryStt(false)
-                else setQueryStt(true); 
+                // if (kotoba !== '') setQueryStt(false)
+                // else setQueryStt(true); 
               }}
               onFocus={() => setInputBorderAddr(true)}
               onBlur={() => setInputBorderAddr(false)}
             />
             <TouchableOpacity
-              disabled={queryStt}
-              style={{padding: 10, backgroundColor: 'cyan', marginRight: 20}}
-              onPress={() => queryCoor(fullAdd)}
+              disabled={loading}
+              style={{padding: 10, marginRight: 20}}
+              onPress={() => {
+                setLoading(true);
+                queryCoor(fullAdd);
+              }}
             > 
-              <Text>query</Text> 
+              <FontAwesome5 name={'search'} size={24} color={Blues.blue_1} />
             </TouchableOpacity>
           </View>
           <TouchableOpacity
             style={[styles.button, {marginBottom: 50}]}
-            onPress={() => {
-              if(mail === '' || pass === '' || fname === '') Alert.alert("Warning", "Empty string")
-              else __doCreateUser(mail, pass, fname, gender, dob, phone, role, availabilite, province, district, ward, homeAdd, addCoor);
-            }}
+            onPress={() => onClickSignUp()}
           >
-            <Text style={styles.buttonText}>Create Account</Text>
+          { 
+            loading 
+            ? <ActivityIndicator size='small' color={Blues.blue_0} />
+            : <Text style={styles.buttonText}>Create Account</Text>
+          }
           </TouchableOpacity>
         </ScrollView>
       </View>
+       <Modal isVisible={loading}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator size='large' color={Blues.blue_2} />
+        </View>
+      </Modal>
     </View>
   );
 };

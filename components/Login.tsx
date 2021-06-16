@@ -5,11 +5,13 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
   Alert,
   StatusBar,
   ScrollView
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import Modal from 'react-native-modal';
 import { faCoffee,faChevronLeft, faAppleAlt } from '@fortawesome/free-solid-svg-icons';
 import {Blues, Grays} from './Colors';
 import {LoginProps, AuthRoutes} from './Routes';
@@ -25,6 +27,7 @@ export default function Login({route, navigation}: LoginProps) {
   const [inputBorder1, setInputBorder1] = useState<boolean>(false);
   const [inputBorder2, setInputBorder2] = useState<boolean>(false);
   const passInputRef = useRef<TextInput>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const {signIn} = React.useContext(AuthContext);
 
   const storeID = async (value: string) => {
@@ -48,6 +51,8 @@ export default function Login({route, navigation}: LoginProps) {
         console.log(res.role);
         await AsyncStorage.setItem('userRole', res.role)
         .catch(e => console.log(e.message));
+        await AsyncStorage.setItem('userName', res.fname)
+        .catch(e => console.log(e.message));
       }
     }
   };
@@ -61,9 +66,11 @@ export default function Login({route, navigation}: LoginProps) {
       if (response && response.user) {
         console.log(response.user.uid);
         storeID(response.user.uid);
+        setLoading(false);
         if(signIn) signIn();
       }
     } catch (e) {
+      setLoading(false);
       Alert.alert("Warning", e.message);
     }
   }
@@ -132,12 +139,17 @@ export default function Login({route, navigation}: LoginProps) {
           </View>
           <TouchableOpacity
             style={styles.button}
+            disabled={loading}
             onPress={() => {
               if(mail === '' || pass === '') Alert.alert("Warning", "Empty string")
               else __doSignIn(mail, pass)
             }}
           >
-            <Text style={styles.buttonText}>Log in</Text>
+            {
+              loading 
+              ? <View><ActivityIndicator size='small' color={Blues.blue_0} /></View> 
+              : <Text style={styles.buttonText}>Log in</Text>
+            }
           </TouchableOpacity>
           <View style={styles.lowerLine}>
             <Text style={{color: Grays.gray_0}}>Forgot password?</Text>

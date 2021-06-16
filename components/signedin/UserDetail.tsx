@@ -18,6 +18,11 @@ import { lorem } from './Profile';
 import Modal from 'react-native-modal';
 import firestore from '@react-native-firebase/firestore';
 import {toDate, ratingType} from './Profile';
+import auth from '@react-native-firebase/auth'; 
+import { GetName, FaireID } from '../../notgood/FonctionsUtiles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+var currentUserId: string|undefined = auth().currentUser?.uid;
 
 export const InfoCard = ({title, detail, style}: any) => (
   <View style={{...style}}>
@@ -26,27 +31,99 @@ export const InfoCard = ({title, detail, style}: any) => (
   </View>
 );
 
+
 export default function UserDetail({route, navigation}: UserDetailProps) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [ratingModal, setRatingModal] = useState<boolean>(false);
   const [ratingValue, setRatingValue] = useState<number>(0);
   const [star, setStar] = useState<ratingType>();
   const [availabilite, setAvailabilite] = useState<string>('');
-  const passData = route.params.data;
-  const passAddr = passData.address[0].addName;
-  const guessID: string = route.params.id; 
-  const guessName: string = passData.fname;
-  const guessRole : string= passData.role;
-  const guessGender: string = passData.gender.charAt(0).toUpperCase() + passData.gender.slice(1);
-  const guessDate : Date = toDate(passData.dob.seconds);
-  const guessAge: number = new Date().getFullYear() -  guessDate.getFullYear();
-  const guessPhone: string = passData.pnumber;
-  const guessMail: string = passData.email;
-  const guessAddr: string = passAddr.homeNumber + ', ' 
+  const [currentFName, setCurrentFName] = useState<string>();
+  const [inboxID, setInboxID] = useState<string>();
+  var passData = route.params.data;
+  var passAddr = passData.address[0].addName;
+  var guessID: string = route.params.id; 
+  var guessName: string = passData.fname;
+  var guessRole : string= passData.role;
+  var guessGender: string = passData.gender.charAt(0).toUpperCase() + passData.gender.slice(1);
+  var guessDate : Date = toDate(passData.dob.seconds);
+  var guessAge: number = new Date().getFullYear() -  guessDate.getFullYear();
+  var guessPhone: string = passData.pnumber;
+  var guessMail: string = passData.email;
+  var guessAddr: string = passAddr.homeNumber + ', ' 
                               + passAddr.ward + ', ' 
                               + passAddr.district + ', ' 
                               + passAddr.province; 
-  console.log(JSON.stringify(passData));
+  // console.log(JSON.stringify(passData));
+  const ContactClick = async ( senderName: string|undefined, senderID: string|undefined, receiverName: string, receiverID: string ) => {
+    let newMessageID: string = FaireID();
+    setInboxID(newMessageID);
+    await firestore()
+      .collection('userMessages')
+      .doc(senderID)
+        .update({
+          messageList: firestore.FieldValue.arrayUnion({
+            participants: {
+              sender: {
+                fname: senderName,
+                id: senderID
+              },
+              receiver: {
+                fname: receiverName,
+                id: receiverID
+              }
+            },
+            messageID: newMessageID,
+            createdAt: new Date(),
+            createdMessage: ''
+          })
+        }).catch(e => console.log(e.message));
+    await firestore()
+      .collection('userMessages')
+      .doc(receiverID)
+        .update({
+          messageList: firestore.FieldValue.arrayUnion({
+            participants: {
+              sender: {
+                fname: receiverName,
+                id: receiverID 
+              },
+              receiver: {
+                fname: senderName,
+                id: senderID 
+              }
+            },
+            messageID: newMessageID,
+            createdAt: new Date(),
+            createdMessage: ''
+          })
+        }).catch(e => console.log(e.message));
+    await firestore()
+        .collection('messages')
+        .doc(newMessageID)
+        .set({
+          body: []
+        }).catch(e => console.log('createMessage: ', e.message));
+    setModalVisible(!modalVisible)
+    };
+  
+  useEffect(() => {
+    const toConsole = async() => {
+      var refSender = firestore()
+        .collection('userMessages')
+        .doc(currentUserId);
+      var getSender = await refSender.get();
+      if(!getSender.exists) {
+        console.log('attention: ', getSender.exists)
+      }
+      else {
+        console.log('Another attention: ', getSender.exists);
+        console.log('les info: ', getSender.data());
+      }
+    }
+    toConsole();
+  }, []);
+
   useEffect(() => {
     const fetchEmployee = async () => {
       var employeeRef = firestore().collection('employees').doc(guessID);
@@ -57,12 +134,28 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
         let res = employeeInfo.data();
         if(res !== undefined) {
           setStar(res.rating);
-          console.log(res.rating);
+          // console.log(res.rating);
           setAvailabilite(res.availability);
         }
       }
     };
     fetchEmployee();
+  }, []);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const value = await AsyncStorage.getItem('userName');
+        if(value !== null) {
+          // value previously stored
+          console.log(value);
+          setCurrentFName(value);
+        }
+      } catch(e) {
+        // error reading value
+        console.log(e.message);
+      }
+    }
+    getData();
   }, [])
   return (
     <View style={styles.container}>
@@ -90,7 +183,7 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
               <View style={styles.optionButtons}>
                 <TouchableOpacity
                   style={styles.actionButton}
-                  onPress={() => setModalVisible(!modalVisible)}
+                  onPress={() => ContactClick(currentFName, currentUserId, guessName, guessID)}
                 >
                   <Text style={styles.actionText}>Contact</Text>
                 </TouchableOpacity>
@@ -145,10 +238,9 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
               >
                 <FontAwesomeIcon icon={faChevronLeft} color="white" size={20}/>
               </TouchableOpacity>
-              <Text style={styles.headerTitle}>Misaka</Text>
-              <Button title="BETA" onPress={() => setModalVisible(!modalVisible)} />
+              <Text style={styles.headerTitle}>{GetName(guessName)}</Text>
             </View>
-            <Inbox />
+            <Inbox iid={inboxID} />
           </View>
         </Modal>
         <Modal

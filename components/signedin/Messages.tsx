@@ -15,6 +15,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-native-modal';
 import Inbox from './Inbox'
+import { useEffect } from 'react';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth'; 
+import { GetName } from '../../notgood/FonctionsUtiles';
+
+var currentUid: string|undefined = auth().currentUser?.uid;
 
 const windowWidth : number = Dimensions.get('window').width;
 
@@ -59,28 +65,62 @@ const fakeMessage = [
 
 export default function Messages() {
   const [messageVisible, setMessageVisible] = useState<boolean>(false);
-  const renderUser = ({ item }: any) => (
-    <TouchableOpacity 
-      activeOpacity={0.8}
-      style={
-        item == fakeMessage[0] 
-        ? styles.userCardFirst 
-        : item == fakeMessage[fakeMessage.length - 1] 
-        ? styles.userCardLast 
-        : styles.userCard
+  const [messageList, setMessageList] = useState<any>();
+  const [inboxID, setInboxID] = useState<string>();
+  const [headerName, setHeaderName] = useState<string>('');
+  useEffect(() => {
+    const getMessage = async () => {
+      try{
+        var returned = await firestore()
+          .collection('userMessages')
+          .doc(currentUid)
+          .get();
+        // console.log('BTCBTC: ', JSON.stringify(returned.data().messageList));
+        if (returned.data() !== undefined) setMessageList(returned.data()?.messageList);
+      } catch(e) {
+        console.log(e.message);
       }
-      onPress={() => setMessageVisible(!messageVisible)}
-    >
-      <Image 
-        source={require('../../assets/images/misaka.png')}
-        style={styles.userImage}
-      />
-      <View style={styles.infoArea}>
-        <Text style={styles.userName}>{item.fname}</Text>
-        <Text style={styles.userPreview}>{item.latest}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+    };
+    getMessage();
+  }, []);
+  const renderUser = ({ item }: any) => {
+    var senderName: string = '';
+    var listVar: any = item.participants;
+    for (const property in listVar) {
+      console.log(`${property}: ${listVar[property]}`);
+      if(`${listVar[property].id}` !== currentUid) {
+        senderName = `${listVar[property].fname}`
+        console.log('sendername: ', senderName);
+        setTimeout(() => setHeaderName(senderName), 0);
+      }
+    }
+    return (
+      <TouchableOpacity 
+        activeOpacity={0.8}
+        style={
+          item == fakeMessage[0] 
+          ? styles.userCardFirst 
+          : item == fakeMessage[fakeMessage.length - 1] 
+          ? styles.userCardLast 
+          : styles.userCard
+        }
+        onPress={() => {
+          setInboxID(item.messageID);
+          setMessageVisible(!messageVisible)
+        }}
+      >
+        <Image 
+          source={require('../../assets/images/misaka.png')}
+          style={styles.userImage}
+        />
+        <View style={styles.infoArea}>
+          <Text style={styles.userName}>{senderName}</Text>
+          <Text style={styles.userPreview}>Utilisateur</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  } 
+  
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="black" />
@@ -89,9 +129,9 @@ export default function Messages() {
       </View>
       <View style={[styles.lowerSpace, {paddingTop: 20}]}>
       <FlatList
-        data={fakeMessage}
+        data={messageList}
         renderItem={renderUser}
-        keyExtractor={item => item.id}
+        keyExtractor={item => messageList.indexOf(item)}
       />
       </View>
       <Modal
@@ -108,9 +148,9 @@ export default function Messages() {
               >
                 <FontAwesomeIcon icon={faChevronLeft} color="white" size={20}/>
               </TouchableOpacity>
-              <Text style={styles.headerTitle}>Misaka</Text>
+              <Text style={styles.headerTitle}>{headerName}</Text>
             </View>
-            <Inbox />
+            <Inbox iid={inboxID} />
           </View>
         </Modal>
     </View>

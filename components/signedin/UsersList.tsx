@@ -140,7 +140,7 @@ export default function UsersList({route, navigation}: UsersListProps) {
         <Text style={styles.headerTitle}>Recommendation</Text>
       </View>
       <View style={styles.lowerSpace}>
-          <View style={styles.sortBar}>
+          {/* <View style={styles.sortBar}>
             <View style={styles.leftSortBar}>
               <Text>Sort by:</Text>
             </View>
@@ -155,7 +155,7 @@ export default function UsersList({route, navigation}: UsersListProps) {
                 <Picker.Item label="JavaScript" value="js" />
               </Picker>
             </View>
-          </View>
+          </View> */}
           <FlatList
             data={dataList}
             renderItem={renderUser}
