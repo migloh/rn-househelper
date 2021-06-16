@@ -10,11 +10,25 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCaretDown, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { RecoveryProps } from './Routes';
+import auth from '@react-native-firebase/auth';
 import {Blues, Grays} from './Colors';
 
 export default function Recovery({route, navigation}: RecoveryProps) {
   const [mail, setMail] = useState<string>('');
   const [inputBorder1, setInputBorder1] = useState<boolean>(false);
+  const ResetPassword = async () => {
+    try {
+      await auth().sendPasswordResetEmail(mail);
+      Alert.alert('Email sent', 'Please check your email');
+    } catch (e) {
+      Alert.alert('Error', e.message);
+    }
+  }
+  const onClickPassword = () => {
+    if (mail == '') Alert.alert('Warning', 'Please fill your email!');
+    else ResetPassword();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.upperBar}>
@@ -44,7 +58,7 @@ export default function Recovery({route, navigation}: RecoveryProps) {
         </View>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => Alert.alert("Sent", "Please check your mail")}
+          onPress={() => onClickPassword()}
         >
           <Text style={styles.buttonText}>Proceed</Text>
         </TouchableOpacity>
