@@ -127,7 +127,7 @@ export default function Signup({route, navigation}: SignupProps) {
       if (response && response.user) {
         Alert.alert("Success", "Account created successfully");
         console.log(JSON.stringify(response.user.uid));
-        const userID: string = response.user.uid;
+        var userID: string = response.user.uid;
         firestore().collection('users').doc(userID).set({
           fname: lame,
           gender: sex,

@@ -5,7 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 // tabs
 
 export enum EnumTabs {
-  Locations = "Locations",
+  LocationsStack = "LocationsStack",
   UserStack = "UserStack",
   Messages = "Messages",
   Profile = "Profile",
@@ -13,7 +13,7 @@ export enum EnumTabs {
 };
 
 export type BottomTabParamList = {
-  [EnumTabs.Locations]: undefined;
+  [EnumTabs.LocationsStack]: undefined;
   [EnumTabs.UserStack]: undefined;
   [EnumTabs.Messages]: undefined;
   [EnumTabs.Profile]: undefined
@@ -40,6 +40,11 @@ export enum UserRoute {
   Inbox = "Inbox"
 };
 
+export enum LocationsRoute {
+  Locations = "UsersList",
+  UserDetail = "UserDetail",
+};
+
 export enum BoxRoute {
   Tabs = "Tabs",
   Inbox = "Inbox"
@@ -63,6 +68,11 @@ export type UserStackParamList = {
   [UserRoute.UserDetail]: FirebaseFirestoreTypes.DocumentData,
 }
 
+export type LocationsStackParamList = {
+  [LocationsRoute.Locations]: undefined,
+  [LocationsRoute.UserDetail]: FirebaseFirestoreTypes.DocumentData,
+}
+
 type LoadingScreenRouteProp = RouteProp<AppStackParamList, AppRoutes.LoadingScreen>;
 type AuthScreensRouteProp = RouteProp<AppStackParamList, AppRoutes.AuthScreens>;
 type HomeScreenRouteProp = RouteProp<AppStackParamList, AppRoutes.Home>;
@@ -74,6 +84,9 @@ type RecoveryScreenRouteProp = RouteProp<AuthStackParamList, AuthRoutes.Recovery
 
 type UsersListScreenRouteProp = RouteProp<UserStackParamList, UserRoute.UsersList>;
 type UserDetailScreenRouteProp = RouteProp<UserStackParamList, UserRoute.UserDetail>;
+
+type LocationsScreenRouteProp = RouteProp<LocationsStackParamList, LocationsRoute.Locations>;
+type LocationsDetailScreenRouteProp = RouteProp<LocationsStackParamList, LocationsRoute.UserDetail>;
 
 type LoadingScreenNavigationProp = StackNavigationProp<
   AppStackParamList,
@@ -114,6 +127,16 @@ type UserDetailScreenNavigationProp = StackNavigationProp<
   UserRoute.UserDetail
 >;
 
+type LocationsScreenNavigationProp = StackNavigationProp<
+  LocationsStackParamList,
+  LocationsRoute.Locations
+>;
+
+type LocationsDetailScreenNavigationProp = StackNavigationProp<
+  LocationsStackParamList,
+  LocationsRoute.UserDetail
+>;
+
 export type LoadingScreenProps = {
   route: LoadingScreenRouteProp;
   navigation: LoadingScreenNavigationProp;
@@ -151,4 +174,13 @@ export type UsersListProps = {
 export type UserDetailProps = {
   route: UserDetailScreenRouteProp;
   navigation: UserDetailScreenNavigationProp;
+};
+
+export type LocationsProps = {
+  route: LocationsScreenRouteProp;
+  navigation: LocationsScreenNavigationProp;
+};
+export type LocationsDetailProps = {
+  route: LocationsDetailScreenRouteProp;
+  navigation: LocationsDetailScreenNavigationProp;
 };

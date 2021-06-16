@@ -1,5 +1,6 @@
 import React from 'react';
 import Locations from './signedin/Locations';
+import LocationsStack from './signedin/LocationsStack';
 import UserStack from './signedin/UserStack';
 import Messages from './signedin/Messages';
 import Profile from './signedin/Profile';
@@ -34,8 +35,8 @@ export default function Home() {
             <FontAwesome5 name='map' size={25} color={color}/>
           ),
         }}
-        name={EnumTabs.Locations} 
-        component={Locations} 
+        name={EnumTabs.LocationsStack} 
+        component={LocationsStack} 
        />
       <Tabs.Screen 
         options={{

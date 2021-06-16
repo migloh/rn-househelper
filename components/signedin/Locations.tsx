@@ -3,6 +3,7 @@ import {
   View, 
   Text,
   TouchableOpacity,
+  TouchableHighlight,
   StyleSheet
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -10,11 +11,13 @@ import {Blues, Grays, mapStyle} from '../Colors';
 import GetLocation from 'react-native-get-location'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHandSparkles, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons'
+import { LocationsRoute, LocationsProps} from '../Routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import Modal from 'react-native-modal';
 import {responseType} from './UsersList';
 
-export default function Locations() {
+export default function Locations({ route, navigation }: LocationsProps) {
   const [region, setRegion] = useState<Region | undefined>({
     latitude: 21.0309509,
     longitude: 105.7820018,
@@ -22,44 +25,10 @@ export default function Locations() {
     longitudeDelta: 0.142128,
   });
   const [dataList, setDataList] = useState<responseType>();
-  // const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(false);
   const [currentRole, setCurrentRole] = useState<string>('');
   const mapRef = useRef<MapView>(null);
-  const latlog = [
-    {
-      coor: { 
-        latitude: 21.026409, 
-        longitude: 105.832103 
-      },
-      title: 'PREMIERE',
-      description: 'La premiere'
-    },
-    {
-      coor: {
-        latitude: 21.035110,
-        longitude: 105.821609
-      },
-      title: 'DEUXIEME',
-      description: 'La deuxieme'
-    },
-    {
-      coor: {
-        latitude: 21.046505,
-        longitude: 105.801278
-      },
-      title: 'TROISIEME',
-      description: 'La troisieme'
-    },
-    {
-      coor: {
-        latitude: 21.040818,
-        longitude: 105.765622
-      },
-      title: 'QUATRIEME',
-      description: 'La quatrieme'
-    }
 
-  ];
   useEffect(() => {
     const getData = async () => {
     try {
@@ -127,16 +96,18 @@ export default function Locations() {
               latitude: marker.data.address[0].homeCoor.lat,
               longitude: marker.data.address[0].homeCoor.lng
             }}
-            title={marker.data.fname}
-            description={
-              marker.data.address[0].addName.district + ', '
-              + marker.data.address[0].addName.province
-            }
+            // title={marker.data.fname}
+            // description={
+            //   marker.data.address[0].addName.district + ', '
+            //   + marker.data.address[0].addName.province
+            // }
+            onPress={() => navigation.navigate(LocationsRoute.UserDetail, marker)}
           >
-            <View style={{width: 30, height: 30, justifyContent: 'center', alignItems: 'center'}}>
+            <View
+              style={styles.markerStyle}
+             >
               <FontAwesomeIcon icon={faHandSparkles} color={Blues.blue_3} size={30}/>
             </View>
-            
           </Marker>
         ))}
       </MapView>
@@ -179,6 +150,12 @@ export default function Locations() {
           <FontAwesomeIcon icon={faMapMarkerAlt} color={Blues.blue_0} size={30} />
         </TouchableOpacity>
       </View>
+      {/* <Modal isVisible={loading}>
+        <View style={{flex: 1, backgroundColor: 'white'}}>
+          <Text>I am the modal content!</Text>
+          <TouchableOpacity onPress={() => setLoading(false)}><Text>gayhere</Text></TouchableOpacity>
+        </View>
+      </Modal> */}
     </View>
   );
 };
@@ -202,4 +179,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20, 
   },
+  markerStyle: {
+    width: 30, 
+    height: 30, 
+    justifyContent: 'center', 
+    alignItems: 'center'
+  }
 });
