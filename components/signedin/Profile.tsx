@@ -102,13 +102,12 @@ export default function Profile() {
 
   const __doSignOut = async () => {
     try{
+        await AsyncStorage.clear();
         await auth()
           .signOut()
           .then(() => signOut && signOut());
-        await AsyncStorage.clear()
-        .catch(e => console.log(e.message));
     } catch (e){
-      console.log(e.message);
+      console.log('Async', e.message);
     }
   }
 

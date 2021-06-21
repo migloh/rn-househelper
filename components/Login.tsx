@@ -50,6 +50,7 @@ export default function Login({route, navigation}: LoginProps) {
       if(res !== undefined) {
         console.log(res.role);
         await AsyncStorage.setItem('userRole', res.role)
+        .then(() => console.log('yeeee set duoc roi'))
         .catch(e => console.log(e.message));
         await AsyncStorage.setItem('userName', res.fname)
         .catch(e => console.log(e.message));

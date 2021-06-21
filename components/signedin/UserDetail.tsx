@@ -189,12 +189,12 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
                   <Text style={styles.actionText}>Contact</Text>
                 </TouchableOpacity>
                 <View style={{width: 20, height: 'auto'}} />
-                <TouchableOpacity 
+                {/* <TouchableOpacity 
                   style={styles.actionButton}
                   onPress={() => setRatingModal(!ratingModal)}
                 >
                   <Text style={styles.actionText}>Rate</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             </View>
           </View>

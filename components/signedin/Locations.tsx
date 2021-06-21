@@ -32,7 +32,7 @@ export default function Locations({ route, navigation }: LocationsProps) {
   useEffect(() => {
     const getData = async () => {
     try {
-      const value = await AsyncStorage.getItem('userRole')
+      var value = await AsyncStorage.getItem('userRole')
       if(value !== null) {
         // value previously stored
         console.log('get role ok: ', value);
@@ -70,7 +70,7 @@ export default function Locations({ route, navigation }: LocationsProps) {
       }
     };
     getData();
-  }), [];
+  }), [currentRole];
 
   return (
     <View style={styles.container}>

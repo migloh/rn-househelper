@@ -72,10 +72,9 @@ export default function UsersList({route, navigation}: UsersListProps) {
   }, []);
 
   useEffect(() => {
-    var userRef = firestore().collection("users");
     const getData = async () => {
       try {
-        var query = await userRef.where("role", "==", currentRole).get();
+        var query = await firestore().collection("users").where("role", "==", currentRole).get();
         var tempData: responseType = [];
         if(!query.empty) {
           query.forEach(doc => {
