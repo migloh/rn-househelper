@@ -115,8 +115,6 @@ export default function Signup({route, navigation}: SignupProps) {
     dist: string,
     ward: string,
     addh: string,
-    // lati: number,
-    // longi: number
     coor: CoordinateType|undefined
     ) => {
     try {
@@ -128,7 +126,7 @@ export default function Signup({route, navigation}: SignupProps) {
         Alert.alert("Success", "Account created successfully");
         console.log(JSON.stringify(response.user.uid));
         var userID: string = response.user.uid;
-        firestore().collection('users').doc(userID).set({
+        firestore().collection('users1').doc(userID).set({
           fname: lame,
           gender: sex,
           dob: born,
@@ -136,23 +134,18 @@ export default function Signup({route, navigation}: SignupProps) {
           email: lmail,
           role: rooru,
           description: '',
-          address: [
-           {
-             addName: {
-               province: prov,
-               district: dist,
-               ward: ward,
-               homeNumber: addh
-             },
-             homeCoor: coor           
-           } 
-          ]
+          address: {
+            province: prov,
+            district: dist,
+            ward: ward,
+            homeNumber: addh,
+            homeCoor: coor           
+          } 
         })
         .then(() => console.log('ok created'))
         if(rooru === 'Employee') {
-          firestore().collection('employees').doc(userID).set({
+          firestore().collection('employees1').doc(userID).set({
             availability: avail,
-            rating: []
           })
         }
         setLoading(false);

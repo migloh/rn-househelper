@@ -41,7 +41,7 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
   const [currentFName, setCurrentFName] = useState<string>();
   const [inboxID, setInboxID] = useState<string>();
   var passData = route.params.data;
-  var passAddr = passData.address[0].addName;
+  var passAddr = passData.address;
   var guessID: string = route.params.id; 
   var guessName: string = passData.fname;
   var guessRole : string= passData.role;

@@ -94,24 +94,20 @@ export default function EditProfile({ data }: dataType) {
     ) => {
     try {
       await auth().currentUser?.updateEmail(lmail);
-      await firestore().collection('users').doc(currentID).update({
+      await firestore().collection('users1').doc(currentID).update({
         fname: lame,
         gender: sex,
         dob: born,
         pnumber: pnum,
         email: lmail,
         description: '',
-        address: [
-          {
-            addName: {
-              province: prov,
-              district: dist,
-              ward: ward,
-              homeNumber: addh
-            },
-            homeCoor: coor           
-          } 
-        ]
+        address:  {
+          province: prov,
+          district: dist,
+          ward: ward,
+          homeNumber: addh,
+          homeCoor: coor           
+        },
       })
       setLoading(false);
     } catch (e) {

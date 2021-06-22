@@ -55,7 +55,7 @@ export default function Profile() {
   const [fullData, setFullData] = useState<FirebaseFirestoreTypes.DocumentData>();
   const { signOut } = React.useContext(AuthContext);
   const curUid: string|undefined = auth().currentUser?.uid;
-  const userRef = firestore().collection('users').doc(curUid);
+  const userRef = firestore().collection('users1').doc(curUid);
   
   useEffect(() => {
     const fetchEmployee = async () => {
@@ -84,7 +84,7 @@ export default function Profile() {
             setLoading(false);
             setFullData(res);
             if(res.role === 'Employee') fetchEmployee();
-            let fadd = res.address[0].addName;
+            let fadd = res.address;
             let dal: Date = toDate(res.dob.seconds);
             setUName(res.fname);
             setURole(res.role.toUpperCase());

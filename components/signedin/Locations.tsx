@@ -48,12 +48,12 @@ export default function Locations({ route, navigation }: LocationsProps) {
   }, []);
 
   useEffect(() => {
-    var userRef = firestore().collection("users");
     const getData = async () => {
       try {
+        var userRef = firestore().collection("users1");
         var query = await userRef.where("role", "==", currentRole).get();
-        var tempData: responseType = [];
         if(!query.empty) {
+        var tempData: responseType = [];
           query.forEach(doc => {
             let newData: FirebaseFirestoreTypes.DocumentData = {
               id: doc.id,
@@ -93,8 +93,8 @@ export default function Locations({ route, navigation }: LocationsProps) {
             key={index}
             // coordinate={marker.data.address[0].homeCoor}
             coordinate={{
-              latitude: marker.data.address[0].homeCoor.lat,
-              longitude: marker.data.address[0].homeCoor.lng
+              latitude: marker.data.address.homeCoor.lat,
+              longitude: marker.data.address.homeCoor.lng
             }}
             // title={marker.data.fname}
             // description={
