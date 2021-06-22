@@ -43,12 +43,12 @@ export default function EditProfile({ data }: dataType) {
   const [inputBorderPhone, setInputBorderPhone] = useState<boolean>(false);
   const [inputBorderAddr, setInputBorderAddr] = useState<boolean>(false)
   const [gender, setGender] = useState<string>(data?.gender);
-  const [province, setProvince] = useState<string>(data?.address[0].addName.province);
+  const [province, setProvince] = useState<string>(data?.address.province);
   const [districtList, setDistrictList] = useState<districtType>([]);
-  const [district, setDistrict] = useState<string>(data?.address[0].addName.district);
+  const [district, setDistrict] = useState<string>(data?.address.district);
   const [wardList, setWardList] = useState<wardType>([]);
-  const [ward, setWard] = useState<string>(data?.address[0].addName.ward);
-  const [homeAdd, setHomeAdd] = useState<string>(data?.address[0].addName.homeNumber);
+  const [ward, setWard] = useState<string>(data?.address.ward);
+  const [homeAdd, setHomeAdd] = useState<string>(data?.address.homeNumber);
   const [addCoor, setAddCoor] = useState<CoordinateType | undefined>();
   const [queryStt, setQueryStt] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -157,7 +157,7 @@ export default function EditProfile({ data }: dataType) {
             onValueChange={(itemValue, itemIndex) =>
               setGender(itemValue)
             }>
-            <Picker.Item label="Choose one" value="" />
+            <Picker.Item label="No change" value="" />
             <Picker.Item label="Male" value="male" />
             <Picker.Item label="Female" value="female" />
             <Picker.Item label="Other" value="other" />
@@ -243,7 +243,7 @@ export default function EditProfile({ data }: dataType) {
                 if(lmeo == undefined) setDistrictList([]);
                 else setDistrictList(lmeo.district);
               }}>
-              <Picker.Item label="Choose one" value="" />
+              <Picker.Item label="No change" value="" />
               {
                 prv.map((element: any, index: any) => (
                   <Picker.Item key={index} label={element.city} value={element.code} /> 
@@ -265,7 +265,7 @@ export default function EditProfile({ data }: dataType) {
                 if (res == undefined) setWardList([]);
                 else setWardList(res?.ward);
               }}>
-              <Picker.Item label="Choose one" value="" />
+              <Picker.Item label="No change" value="" />
               {
                 districtList.length !== 0
                 ? districtList.map((item: any, index: any) => (
@@ -284,7 +284,7 @@ export default function EditProfile({ data }: dataType) {
               onValueChange={(itemValue, itemIndex) =>
                 setWard(itemValue)
               }>
-              <Picker.Item label="Choose one" value="" />
+              <Picker.Item label="No change" value="" />
               {
                 wardList.length !== 0
                 ? wardList.map((item: any, index: any) => (

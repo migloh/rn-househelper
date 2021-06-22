@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth'; 
 import { GetName } from '../../notgood/FonctionsUtiles';
+import { responseType } from './UsersList';
 
 var currentUid: string|undefined = auth().currentUser?.uid;
 
@@ -43,14 +44,29 @@ export default function Messages() {
     //   }
     // };
     // getMessage();
+    // const subscriber = firestore()
+    // .collection('userMessages')
+    // .doc(currentUid)
+    // .onSnapshot(documentSnapshot => {
+    //   console.log('User data: ', JSON.stringify(documentSnapshot.data()));
+    //   setMessageList(documentSnapshot.data()?.messageList);
+    // });
     const subscriber = firestore()
-    .collection('userMessages')
-    .doc(currentUid)
-    .onSnapshot(documentSnapshot => {
-      console.log('User data: ', JSON.stringify(documentSnapshot.data()));
-      setMessageList(documentSnapshot.data()?.messageList);
-    });
-
+      .collection('users1')
+      .doc(currentUid)
+      .collection('messages')
+      .onSnapshot((docSnap: any) => {
+        var temp: any = [];
+        docSnap.forEach((element: any) => {
+            let newData: any  = {
+              id: element.id,
+              data: element.data()
+            };
+        temp.push(newData);
+        });
+        console.log(temp);
+        setMessageList(temp);
+      });
     // Stop listening for updates when no longer required
     return () => subscriber();
   }, [currentUid]);
@@ -77,8 +93,8 @@ export default function Messages() {
           styles.userCard
         }
         onPress={() => {
-          setHeaderName(senderName);
-          setInboxID(item.messageID);
+          setHeaderName(item.data.receiver.fname);
+          setInboxID(item.data.msgID);
           setMessageVisible(!messageVisible)
         }}
       >
@@ -87,7 +103,7 @@ export default function Messages() {
           style={styles.userImage}
         />
         <View style={styles.infoArea}>
-          <Text style={styles.userName}>{senderName}</Text>
+          <Text style={styles.userName}>{item.data.receiver.fname}</Text>
           <Text style={styles.userPreview}>Utilisateur</Text>
         </View>
       </TouchableOpacity>

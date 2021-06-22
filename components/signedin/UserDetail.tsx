@@ -59,75 +59,58 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
   const ContactClick = async ( senderName: string|undefined, senderID: string|undefined, receiverName: string, receiverID: string ) => {
     let newMessageID: string = FaireID();
     setInboxID(newMessageID);
-    await firestore()
-      .collection('userMessages')
-      .doc(senderID)
-        .update({
-          messageList: firestore.FieldValue.arrayUnion({
-            participants: {
-              sender: {
-                fname: senderName,
-                id: senderID
-              },
-              receiver: {
-                fname: receiverName,
-                id: receiverID
-              }
-            },
-            messageID: newMessageID,
-            createdAt: new Date(),
-            createdMessage: ''
-          })
-        }).catch(e => console.log(e.message));
-    await firestore()
-      .collection('userMessages')
-      .doc(receiverID)
-        .update({
-          messageList: firestore.FieldValue.arrayUnion({
-            participants: {
-              sender: {
-                fname: receiverName,
-                id: receiverID 
-              },
-              receiver: {
-                fname: senderName,
-                id: senderID 
-              }
-            },
-            messageID: newMessageID,
-            createdAt: new Date(),
-            createdMessage: ''
-          })
-        }).catch(e => console.log(e.message));
-    await firestore()
-        .collection('messages')
-        .doc(newMessageID)
-        .set({
-          body: []
-        }).catch(e => console.log('createMessage: ', e.message));
-    setModalVisible(!modalVisible)
-    };
-  
-  useEffect(() => {
-    const toConsole = async() => {
-      var refSender = firestore()
-        .collection('userMessages')
-        .doc(currentUserId);
-      var getSender = await refSender.get();
-      if(!getSender.exists) {
-        console.log('attention: ', getSender.exists)
+    try {
+      var messageQuery = firestore().collection('users1').doc(currentUserId).collection('messages').doc(receiverID);
+      var getQuery = await messageQuery.get()
+      if (!getQuery.exists) {
+        await messageQuery.set({
+          msgID: newMessageID,
+          lastestMessage: '',
+          lastestDate: new Date(),
+          receiver: {
+            fname: receiverName,
+            id: receiverID
+          } 
+        });
+        await firestore().collection('users1').doc(receiverID).collection('messages').doc(currentUserId).set({
+          msgID: newMessageID,
+          lastestMessage: '',
+          lastestDate: new Date(),
+          receiver: {
+            fname: senderName,
+            id: senderID 
+          } 
+        })
       }
       else {
-        console.log('Another attention: ', getSender.exists);
-        console.log('les info: ', getSender.data());
+        setInboxID(getQuery.data()?.msgID);
       }
+      setModalVisible(!modalVisible)
+    } catch (e) {
+      console.log('Message no koto: ', e.message);
     }
-    toConsole();
-  }, []);
+    };
+  
+  // useEffect(() => {
+  //   const toConsole = async() => {
+  //     var refSender = firestore()
+  //       .collection('userMessages')
+  //       .doc(currentUserId);
+  //     var getSender = await refSender.get();
+  //     if(!getSender.exists) {
+  //       console.log('attention: ', getSender.exists)
+  //     }
+  //     else {
+  //       console.log('Another attention: ', getSender.exists);
+  //       console.log('les info: ', getSender.data());
+  //     }
+  //   }
+  //   toConsole();
+  // }, []);
 
   useEffect(() => {
     const fetchEmployee = async () => {
-      var employeeRef = firestore().collection('employees').doc(guessID);
+      var employeeRef = firestore().collection('employees1').doc(guessID);
       var employeeInfo = await employeeRef.get();
       if (!employeeInfo.exists){
         console.log('Ne trouve pas les informations');
@@ -189,12 +172,12 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
                   <Text style={styles.actionText}>Contact</Text>
                 </TouchableOpacity>
                 <View style={{width: 20, height: 'auto'}} />
-                {/* <TouchableOpacity 
+                <TouchableOpacity 
                   style={styles.actionButton}
                   onPress={() => setRatingModal(!ratingModal)}
                 >
                   <Text style={styles.actionText}>Rate</Text>
-                </TouchableOpacity> */}
+                </TouchableOpacity>
               </View>
             </View>
           </View>

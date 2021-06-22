@@ -41,7 +41,7 @@ export default function Login({route, navigation}: LoginProps) {
   };
 
   const storeRole = async (eeID: string|undefined) => {
-    var userRef = firestore().collection('users').doc(eeID);
+    var userRef = firestore().collection('users1').doc(eeID);
     var userInfo = await userRef.get();
     if (!userInfo.exists){
       console.log('Ne trouve pas les informations');

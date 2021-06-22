@@ -59,7 +59,7 @@ export default function Profile() {
   
   useEffect(() => {
     const fetchEmployee = async () => {
-      var employeeRef = firestore().collection('employees').doc(curUid);
+      var employeeRef = firestore().collection('employees1').doc(curUid);
       var employeeInfo = await employeeRef.get();
       if (!employeeInfo.exists){
         console.log('Ne trouve pas les informations');

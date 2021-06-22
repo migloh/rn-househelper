@@ -13,9 +13,9 @@ import { Blues, inBlack, Grays } from '../Colors';
 import { Dimensions } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import database, { FirebaseDatabaseTypes } from '@react-native-firebase/database';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth'; 
+import { responseType } from './UsersList';
 
 var currentUid: string|undefined = auth().currentUser?.uid;
 
@@ -30,14 +30,14 @@ const Transmit = ({item}: any) => (
   <View style={styles.transmitter}>
     <TouchableOpacity
       activeOpacity={0.9}
-      onLongPress={() => Alert.alert('Timestamp', JSON.stringify(item.timestamp) + '\nsender: ' + JSON.stringify(item.senderID))}
+      // onLongPress={() => Alert.alert('Timestamp', JSON.stringify(item.timestamp) + '\nsender: ' + JSON.stringify(item.senderID))}
       style={
-        item.senderID === currentUid 
+        item.data.senderID === currentUid 
         ? styles.isSender 
         : styles.isReceiver
       }
     >
-      <Text style={{fontSize: 16, color: 'white'}}>{item.message}</Text>
+      <Text style={{fontSize: 16, color: 'white'}}>{item.data.content}</Text>
     </TouchableOpacity>
   </View>
 );
@@ -54,13 +54,11 @@ export default function Inbox ({iid}: inboxType) {
   
   const sendGo = async (kotoba: string) => {
     try {
-      await firestore().collection('messages').doc(inboxID)
-        .update({
-          body: firestore.FieldValue.arrayUnion({
-            message: kotoba,
-            senderID: currentUid,
-            timestamp: new Date() 
-          })
+      await firestore().collection('messagesPool').doc(inboxID).collection('messageList').doc()
+        .set({
+          content: kotoba,
+          createdAt: new Date(),
+          senderID: currentUid
         }); 
       setText('');
     } catch(e) {
@@ -68,17 +66,41 @@ export default function Inbox ({iid}: inboxType) {
     } 
   };
   useEffect(() => {
-    const subscriber = firestore()
-      .collection('messages')
-      .doc(inboxID)
-      .onSnapshot(documentSnapshot => {
-        console.log('User data: ', documentSnapshot.id);
-        if (documentSnapshot.data() !== undefined) getMessBatch(documentSnapshot.data()?.body);
-      });
+    // const subscriber = firestore()
+    //   .collection('messagePool')
+    //   .doc(inboxID)
+    //   .collection('messageList')
+    //   .onSnapshot(documentSnapshot => {
+    //     console.log('User data: ', documentSnapshot.id);
+    //     if (documentSnapshot.data() !== undefined) getMessBatch(documentSnapshot.data()?.body);
+    //   });
 
-    // Stop listening for updates when no longer required
-    return () => subscriber();
-  }, [])
+    // // Stop listening for updates when no longer required
+    // return () => subscriber();
+    const getMsg = async () => {
+      console.log('mege,egmeg id: ', inboxID);
+      try {
+    var msgReal = firestore().collection('messagesPool')
+      .doc(inboxID).collection('messageList').orderBy('createdAt')
+      .onSnapshot((docSnap: any) => {
+        var temp: any = [];
+        docSnap.forEach((element: any) => {
+            let newData: any  = {
+              id: element.id,
+              data: element.data()
+            };
+        temp.push(newData);
+        });
+        console.log(temp);
+        getMessBatch(temp);
+      });
+    // return () => msgReal();
+      } catch (e) {
+        console.log('inboxErr: ', e.message);
+      }
+    };
+    getMsg();
+  }, []);
   return (
     <View style={styles.container}>
         <FlatList

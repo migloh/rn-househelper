@@ -26,7 +26,7 @@ export default function UsersList({route, navigation}: UsersListProps) {
   const [loading, setLoading] = useState<boolean>(true);
   const [currentRole, setCurrentRole] = useState<string>('');
   const renderUser = ({ item }: FirebaseFirestoreTypes.DocumentData) => {
-    let addRes = item.data.address[0].addName;
+    let addRes = item.data.address;
     let fullAdd: string = 
       addRes.homeNumber + ', ' 
       + addRes.ward + ', ' 
