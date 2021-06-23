@@ -31,12 +31,15 @@ export const InfoCard = ({title, detail, style}: any) => (
   </View>
 );
 
+export const boshi = (nums: Array<number>) => {
+    return nums.reduce((a, b) => (a + b)) / nums.length;
+}
 
 export default function UserDetail({route, navigation}: UserDetailProps) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [ratingModal, setRatingModal] = useState<boolean>(false);
   const [ratingValue, setRatingValue] = useState<number>(0);
-  const [star, setStar] = useState<ratingType>();
+  const [star, setStar] = useState<string|number>('');
   const [availabilite, setAvailabilite] = useState<string>('');
   const [currentFName, setCurrentFName] = useState<string>();
   const [inboxID, setInboxID] = useState<string>();
@@ -117,8 +120,6 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
       } else {
         let res = employeeInfo.data();
         if(res !== undefined) {
-          setStar(res.rating);
-          // console.log(res.rating);
           setAvailabilite(res.availability);
         }
       }
@@ -140,7 +141,77 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
       }
     }
     getData();
+  }, []);
+
+  useEffect(() => {
+    const getRating = async () => {
+      try {
+        var ratingRef = firestore().collection('employees1').doc(guessID).collection('rating'); 
+        var rateTotal = await ratingRef.get();
+        var userRate = await ratingRef.doc(currentUserId).get();
+        if(rateTotal.empty) setStar('N/A')
+        else {
+          var boshiArray: Array<number> = [];
+          rateTotal.forEach(doc => {
+            boshiArray.push(doc.data()?.rating);
+            console.log(doc.data());
+          });
+          setStar(boshi(boshiArray))
+        }
+        if(userRate.exists) setRatingValue(userRate.data()?.rating);
+        else setRatingValue(0);
+      } catch (error) {
+        console.log('gerRating Error: ', error.message); 
+      }
+    };
+    getRating();
   }, [])
+
+  const onRatingClick = async (rateNum: number) => {
+    try {
+      if(rateNum == 0) setRatingModal(!ratingModal);
+      else {
+        await firestore()
+          .collection('employees1')
+          .doc(guessID)
+          .collection('rating')
+          .doc(currentUserId)
+          .set({
+            rating: rateNum,
+            rateDate: new Date(),
+            raterID: currentUserId
+          });
+        setRatingModal(!ratingModal);
+      }
+    } catch (error) {
+      console.log('onratingClick error: ', error.message); 
+    } 
+  }
+
+  const onDeleteClick = async () => {
+    try {
+      var userRate = await firestore()
+        .collection('employees1')
+        .doc(guessID)
+        .collection('rating')
+        .doc(currentUserId)
+        .get();
+      if(!userRate.exists) setRatingModal(!ratingModal);
+      else {
+        await firestore()
+          .collection('employees1')
+          .doc(guessID)
+          .collection('rating')
+          .doc(currentUserId)
+        .delete();
+        setRatingValue(0);
+        setRatingModal(!ratingModal);
+      }
+    } catch (error) {
+      console.log('onDeleteClick error: ', error.message); 
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.upperBar}>
@@ -187,9 +258,10 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
               <View style={styles.outterBasicInfo}>
                 <View style={styles.basicInfo}>
                   <Text style={styles.basicTitle}>Average Rating</Text>
-                  <Text style={styles.basicDetail}>{
-                    star?.length == 0 ? 'N/A'
-                    : 'arimasu' 
+                  <Text style={styles.basicDetail}>{star}{
+                    typeof(star) == 'number'
+                    ? '/5'
+                    : null
                   }</Text>
                 </View>
                 <View style={styles.basicInfo}>
@@ -258,18 +330,20 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
             />
             <TouchableOpacity
               style={[styles.actionRating, {backgroundColor: Blues.blue_2}]}
-              onPress={() => setRatingModal(!ratingModal)}
+              // onPress={() => setRatingModal(!ratingModal)}
+              onPress={() => onRatingClick(ratingValue)}
             >
               <Text style={styles.ratingText}>OK</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionRating, {backgroundColor: inBlack.black_2}]}
-              onPress={
-                useCallback(() => {
-                  setRatingModal(!ratingModal);
-                  setRatingValue(0);
-                }, [])
-              }
+              // onPress={
+              //   useCallback(() => {
+              //     setRatingModal(!ratingModal);
+              //     setRatingValue(0);
+              //   }, [])
+              // }
+              onPress={() => onDeleteClick()}
             >
               <Text style={styles.ratingText}>Delete rating</Text>
             </TouchableOpacity>

@@ -21,6 +21,7 @@ import EditDescription from './EditDescription';
 import Modal from 'react-native-modal';
 import {AuthContext} from '../context';
 import { InfoCard } from './UserDetail';
+import {boshi} from './UserDetail';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
@@ -44,7 +45,7 @@ export default function Profile() {
   const [uPhone, setUPhone] = useState<string>('');
   const [uMail, setUMail] = useState<string>('');
   const [uDress, setUDress] = useState<string>('');
-  const [star, setStar] = useState<ratingType>();
+  const [star, setStar] = useState<string|number>();
   const [availabilite, setAvailabilite] = useState<string>('');
   const [modalProfile, setModalProfile] = useState<boolean>(false);
   const [modalSecurite, setModalSecurite] = useState<boolean>(false);
@@ -66,8 +67,6 @@ export default function Profile() {
       } else {
         let res = employeeInfo.data();
         if(res !== undefined) {
-          setStar(res.rating);
-          console.log(res.rating);
           setAvailabilite(res.availability);
         }
       }
@@ -100,6 +99,26 @@ export default function Profile() {
       fetchInfo();
   }, []);
 
+  useEffect(() => {
+    const getRating = async () => {
+      try {
+        var ratingRef = firestore().collection('employees1').doc(curUid).collection('rating'); 
+        var rateTotal = await ratingRef.get();
+        if(rateTotal.empty) setStar('N/A')
+        else {
+          var boshiArray: Array<number> = [];
+          rateTotal.forEach(doc => {
+            boshiArray.push(doc.data()?.rating);
+            console.log(doc.data());
+          });
+          setStar(boshi(boshiArray))
+        }
+      } catch (error) {
+        console.log('gerRating Error: ', error.message); 
+      }
+    };
+    getRating();
+  }, [])
   const __doSignOut = async () => {
     try{
         await AsyncStorage.clear();
@@ -139,9 +158,10 @@ export default function Profile() {
               <View style={styles.outterBasicInfo}>
                 <View style={styles.basicInfo}>
                   <Text style={styles.basicTitle}>Average Rating</Text>
-                  <Text style={styles.basicDetail}>{
-                    star?.length == 0 ? 'N/A'
-                    : 'arimasu' 
+                  <Text style={styles.basicDetail}>{star}{
+                    typeof(star) == 'number'
+                    ? '/5'
+                    : null
                   }</Text>
                 </View>
                 <TouchableOpacity
