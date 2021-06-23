@@ -30,7 +30,7 @@ const Transmit = ({item}: any) => (
   <View style={styles.transmitter}>
     <TouchableOpacity
       activeOpacity={0.9}
-      // onLongPress={() => Alert.alert('Timestamp', JSON.stringify(item.timestamp) + '\nsender: ' + JSON.stringify(item.senderID))}
+      onLongPress={() => Alert.alert('Timestamp', JSON.stringify(item.data.createdAt) + '\nsender: ' + JSON.stringify(item.data.senderID))}
       style={
         item.data.senderID === currentUid 
         ? styles.isSender 

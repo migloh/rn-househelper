@@ -57,12 +57,11 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
                               + passAddr.province; 
   // console.log(JSON.stringify(passData));
   const ContactClick = async ( senderName: string|undefined, senderID: string|undefined, receiverName: string, receiverID: string ) => {
-    let newMessageID: string = FaireID();
-    setInboxID(newMessageID);
     try {
       var messageQuery = firestore().collection('users1').doc(currentUserId).collection('messages').doc(receiverID);
       var getQuery = await messageQuery.get()
       if (!getQuery.exists) {
+    let newMessageID: string = FaireID();
         await messageQuery.set({
           msgID: newMessageID,
           lastestMessage: '',
@@ -81,6 +80,7 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
             id: senderID 
           } 
         })
+      setInboxID(newMessageID);
       }
       else {
         setInboxID(getQuery.data()?.msgID);

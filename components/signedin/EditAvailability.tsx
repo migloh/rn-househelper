@@ -6,7 +6,21 @@ import {
   TouchableOpacity
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth'; 
 import { Grays, Blues } from '../Colors';
+
+var currentUid: string|undefined = auth().currentUser?.uid;
+
+const setAval = async (avail: string) => {
+  try {
+    await firestore().collection('employees1').doc(currentUid).update({
+      availability: avail 
+    });
+  } catch (error) {
+    console.log('Set avail error: ', error.message);    
+  }
+};
 
 export default function EditAvailability () {
   const [availabilite, setAvailabilite] = useState<string>('')
@@ -29,7 +43,7 @@ export default function EditAvailability () {
       </View>
       <TouchableOpacity
         style={[styles.button, {marginBottom: 50}]}
-        onPress={() => null}
+        onPress={() => setAval(availabilite)}
       >
         <Text style={styles.buttonText}>Save</Text>
       </TouchableOpacity>

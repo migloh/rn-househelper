@@ -29,7 +29,7 @@ export default function Messages() {
   const [messageVisible, setMessageVisible] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<any>();
   const [inboxID, setInboxID] = useState<string>();
-  const [headerName, setHeaderName] = useState<string>('');
+  const [headerName, setHeaderName] = useState<string>('Chatting');
   useEffect(() => {
     // const getMessage = async () => {
     //   try{
@@ -71,16 +71,16 @@ export default function Messages() {
     return () => subscriber();
   }, [currentUid]);
   const renderUser = ({ item }: any) => {
-    var senderName: string = '';
-    var listVar: any = item.participants;
-    for (const property in listVar) {
-      console.log(`${property}: ${listVar[property]}`);
-      if(`${listVar[property].id}` !== currentUid) {
-        senderName = `${listVar[property].fname}`
-        console.log('sendername: ', senderName);
-        // setTimeout(() => setHeaderName(senderName), 0);
-      }
-    }
+    // var senderName: string = '';
+    // var listVar: any = item.participants;
+    // for (const property in listVar) {
+    //   console.log(`${property}: ${listVar[property]}`);
+    //   if(`${listVar[property].id}` !== currentUid) {
+    //     senderName = `${listVar[property].fname}`
+    //     console.log('sendername: ', senderName);
+    //     // setTimeout(() => setHeaderName(senderName), 0);
+    //   }
+    // }
     return (
       <TouchableOpacity 
         activeOpacity={0.8}
@@ -93,7 +93,7 @@ export default function Messages() {
           styles.userCard
         }
         onPress={() => {
-          setHeaderName(item.data.receiver.fname);
+          // setHeaderName(item.data.receiver.fname);
           setInboxID(item.data.msgID);
           setMessageVisible(!messageVisible)
         }}
