@@ -12,6 +12,11 @@ export enum EnumTabs {
   
 };
 
+export enum AdminTabs {
+  UserStack = "UserStack",
+  Profile = "Profile"
+};
+
 export type BottomTabParamList = {
   [EnumTabs.LocationsStack]: undefined;
   [EnumTabs.UserStack]: undefined;
@@ -19,12 +24,18 @@ export type BottomTabParamList = {
   [EnumTabs.Profile]: undefined
 };
 
+export type AdminTabParamList = {
+  [AdminTabs.UserStack]: undefined;
+  [AdminTabs.Profile]: undefined
+};
+
 // stacks
 
 export enum AppRoutes {
   LoadingScreen = "LoadingScreen",
   AuthScreens = "AuthScreens",
-  Home = "Home"
+  AuthedAdmin = "AuthedAdmin",
+  Home = "Home",
 };
 
 export enum AuthRoutes {
@@ -50,10 +61,16 @@ export enum BoxRoute {
   Inbox = "Inbox"
 };
 
+export enum AdminRoute {
+  AvailableUsers = "AvailableUsers",
+  AvailableUserDetail = "AvailableUserDetail"
+};
+
 export type AppStackParamList = {
   [AppRoutes.LoadingScreen]: undefined,
   [AppRoutes.AuthScreens]: undefined,
-  [AppRoutes.Home]: undefined
+  [AppRoutes.AuthedAdmin]: undefined,
+  [AppRoutes.Home]: undefined,
 };
 
 export type AuthStackParamList = {
@@ -66,16 +83,22 @@ export type AuthStackParamList = {
 export type UserStackParamList = {
   [UserRoute.UsersList]: undefined,
   [UserRoute.UserDetail]: FirebaseFirestoreTypes.DocumentData,
-}
+};
 
 export type LocationsStackParamList = {
   [LocationsRoute.Locations]: undefined,
   [LocationsRoute.UserDetail]: FirebaseFirestoreTypes.DocumentData,
-}
+};
+
+export type AdminStackParamList = {
+  [AdminRoute.AvailableUsers]: undefined,
+  [AdminRoute.AvailableUserDetail]: FirebaseFirestoreTypes.DocumentData
+};
 
 type LoadingScreenRouteProp = RouteProp<AppStackParamList, AppRoutes.LoadingScreen>;
 type AuthScreensRouteProp = RouteProp<AppStackParamList, AppRoutes.AuthScreens>;
 type HomeScreenRouteProp = RouteProp<AppStackParamList, AppRoutes.Home>;
+type AuthedAdminRouteProps = RouteProp<AppStackParamList, AppRoutes.AuthedAdmin>;
 
 type WelcomeScreenRouteProp = RouteProp<AuthStackParamList, AuthRoutes.Welcome>;
 type SignupScreenRouteProp = RouteProp<AuthStackParamList, AuthRoutes.Signup>;
@@ -88,6 +111,9 @@ type UserDetailScreenRouteProp = RouteProp<UserStackParamList, UserRoute.UserDet
 type LocationsScreenRouteProp = RouteProp<LocationsStackParamList, LocationsRoute.Locations>;
 type LocationsDetailScreenRouteProp = RouteProp<LocationsStackParamList, LocationsRoute.UserDetail>;
 
+type AvailableUsersScreenRouteProp = RouteProp<AdminStackParamList, AdminRoute.AvailableUsers>;
+type AvailableUserDetailScreenRouteProp = RouteProp<AdminStackParamList, AdminRoute.AvailableUserDetail>;
+
 type LoadingScreenNavigationProp = StackNavigationProp<
   AppStackParamList,
   AppRoutes.LoadingScreen
@@ -99,6 +125,10 @@ type AuthScreensNavigationProp = StackNavigationProp<
 type HomeScreenNavigationProp = StackNavigationProp<
   AppStackParamList,
   AppRoutes.Home
+>;
+type AuthedAdminNavigationProp = StackNavigationProp<
+  AppStackParamList,
+  AppRoutes.AuthedAdmin
 >;
 
 type WelcomeScreenNavigationProp = StackNavigationProp<
@@ -131,10 +161,18 @@ type LocationsScreenNavigationProp = StackNavigationProp<
   LocationsStackParamList,
   LocationsRoute.Locations
 >;
-
 type LocationsDetailScreenNavigationProp = StackNavigationProp<
   LocationsStackParamList,
   LocationsRoute.UserDetail
+>;
+
+type AvailableUsersScreenNavigationProp = StackNavigationProp<
+  AdminStackParamList,
+  AdminRoute.AvailableUsers
+>;
+type AvailableUserDetailScreenNavigationProp = StackNavigationProp<
+  AdminStackParamList,
+  AdminRoute.AvailableUserDetail
 >;
 
 export type LoadingScreenProps = {
@@ -148,6 +186,10 @@ export type AuthScreensProps = {
 export type HomeProps = {
   route: HomeScreenRouteProp,
   navigation: HomeScreenNavigationProp
+};
+export type AuthedAdminProps = {
+  route: AuthedAdminRouteProps,
+  navigation: AuthedAdminNavigationProp
 };
 
 export type WelcomeProps = {
@@ -183,4 +225,14 @@ export type LocationsProps = {
 export type LocationsDetailProps = {
   route: LocationsDetailScreenRouteProp;
   navigation: LocationsDetailScreenNavigationProp;
+};
+
+export type AvailableUsersProps = {
+  route: AvailableUsersScreenRouteProp;
+  navigation: AvailableUsersScreenNavigationProp
+};
+
+export type AvailableUserDetailProps = {
+  route: AvailableUserDetailScreenRouteProp;
+  navigation: AvailableUserDetailScreenNavigationProp
 };

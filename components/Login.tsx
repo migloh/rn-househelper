@@ -20,6 +20,7 @@ import {AuthContext} from './context';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Signup from './Signup';
 
 export default function Login({route, navigation}: LoginProps) {
   const [mail, setMail] = useState<string>('');
@@ -28,7 +29,7 @@ export default function Login({route, navigation}: LoginProps) {
   const [inputBorder2, setInputBorder2] = useState<boolean>(false);
   const passInputRef = useRef<TextInput>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const {signIn} = React.useContext(AuthContext);
+  const {signIn, signInAdmin} = React.useContext(AuthContext);
 
   const storeID = async (value: string) => {
     try {
@@ -48,12 +49,20 @@ export default function Login({route, navigation}: LoginProps) {
     } else {
       let res = userInfo.data();
       if(res !== undefined) {
-        console.log(res.role);
+        if (res.role == 'Admin') {
+          if (signInAdmin) signInAdmin();
+        }
+        else {
+          if (signIn) signIn();
+        }
         await AsyncStorage.setItem('userRole', res.role)
         .then(() => console.log('yeeee set duoc roi'))
         .catch(e => console.log(e.message));
         await AsyncStorage.setItem('userName', res.fname)
         .catch(e => console.log(e.message));
+        if(res.role == 'Admin') {
+          if(signInAdmin) signInAdmin();
+        }
       }
     }
   };
@@ -68,7 +77,6 @@ export default function Login({route, navigation}: LoginProps) {
         console.log(response.user.uid);
         storeID(response.user.uid);
         setLoading(false);
-        if(signIn) signIn();
       }
     } catch (e) {
       setLoading(false);

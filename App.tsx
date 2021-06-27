@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
 import LoadingScreen from './components/LoadingScreen';
 import AuthScreens from './components/AuthScreens';
-import Inbox from './components/signedin/Inbox';
+import AuthedAdmin from './components/signedin/Admin/AuthedAdmin';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AppRoutes, AppStackParamList } from './components/Routes';
@@ -11,13 +11,15 @@ import SplashScreen from 'react-native-splash-screen';
 import {AuthContext} from './components/context'
 
 type PrevStateType = {
+  isAdmin: boolean,
   isLoading: boolean,
   isSignout: boolean,
   userToken: string | null | undefined
 };
 
 type ActionType = {type: 'RESTORE_USER', token: string|null|undefined}
-| {type: 'SIGN_IN', token: string | null|undefined}
+| {type: 'SIGN_IN', token: string|null|undefined}
+| {type: 'SIGN_IN_ADMIN', token: string|null|undefined}
 | {type: 'SIGN_OUT'};
 
 const Stack = createStackNavigator<AppStackParamList>();
@@ -38,6 +40,13 @@ export default function App() {
             isSignout: false,
             userToken: action.token,
           };
+        case 'SIGN_IN_ADMIN':
+          return {
+            ...prevState,
+            isSignout: false,
+            userToken: action.token,
+            isAdmin: true 
+          };
         case 'SIGN_OUT':
           return {
             ...prevState,
@@ -47,6 +56,7 @@ export default function App() {
       }
     },
     { 
+      isAdmin: false,
       isLoading: true,
       isSignout: false,
       userToken: null,
@@ -71,6 +81,10 @@ export default function App() {
     () => dispatch({type: 'SIGN_IN', token: auth().currentUser?.uid}),
     [state]
   );
+  const handleSignInAdmin = useCallback(
+    () => dispatch({type: 'SIGN_IN_ADMIN', token: auth().currentUser?.uid}),
+    [state]
+  );
   const handleSignOut = useCallback(
     () => dispatch({type: 'SIGN_OUT'}),
     [state]
@@ -79,9 +93,10 @@ export default function App() {
   const globalContext = useMemo(
     () => ({
       signIn:  handleSignIn,
+      signInAdmin: handleSignInAdmin,
       signOut: handleSignOut
     }),
-    [handleSignIn, handleSignOut]
+    [handleSignIn, handleSignInAdmin, handleSignOut]
   );
 
   useEffect(() => SplashScreen.hide());
@@ -108,9 +123,9 @@ export default function App() {
                 }} 
               />
             ) 
-            : (
-              <Stack.Screen name={AppRoutes.Home} component={Home} />
-            )
+            : state.isAdmin 
+              ? (<Stack.Screen name={AppRoutes.AuthedAdmin} component={AuthedAdmin} />)
+              : (<Stack.Screen name={AppRoutes.Home} component={Home} />)
           }
         </Stack.Navigator>
       </NavigationContainer>

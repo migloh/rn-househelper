@@ -122,9 +122,8 @@ export default function Profile() {
   const __doSignOut = async () => {
     try{
         await AsyncStorage.clear();
-        await auth()
-          .signOut()
-          .then(() => signOut && signOut());
+        await auth().signOut();
+        if(signOut) signOut();
     } catch (e){
       console.log('Async', e.message);
     }

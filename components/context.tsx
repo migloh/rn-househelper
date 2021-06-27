@@ -2,6 +2,7 @@ import React from 'react';
 
 type AppContext = {
   signIn: () => void,
+  signInAdmin: () => void,
   signOut: () => void
 }
 
