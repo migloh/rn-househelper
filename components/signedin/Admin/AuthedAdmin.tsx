@@ -34,6 +34,7 @@ export default function Home() {
         }}
         name={AdminTabs.UserStack} 
         component={AdminListStack} 
+        initialParams={{tabRole: 'Employer'}}
       />
       <Tabs.Screen 
         options={{
