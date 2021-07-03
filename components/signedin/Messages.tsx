@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -6,24 +6,24 @@ import {
   FlatList,
   StyleSheet,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import { Dimensions } from 'react-native'; 
 import {inBlack, Blues, Grays} from '../Colors';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faChevronLeft} from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-native-modal';
-import Inbox from './Inbox'
-import { useEffect } from 'react';
+import Inbox from './Inbox';
+import {useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth'; 
-import { GetName } from '../../notgood/FonctionsUtiles';
-import { responseType } from './UsersList';
+import auth from '@react-native-firebase/auth';
+import {GetName} from '../../notgood/FonctionsUtiles';
+import {responseType} from './UsersList';
 
-var currentUid: string|undefined = auth().currentUser?.uid;
+var currentUid: string | undefined = auth().currentUser?.uid;
 
-const windowWidth : number = Dimensions.get('window').width;
+const windowWidth: number = Dimensions.get('window').width;
 
 export default function Messages() {
   const [messageVisible, setMessageVisible] = useState<boolean>(false);
@@ -58,11 +58,11 @@ export default function Messages() {
       .onSnapshot((docSnap: any) => {
         var temp: any = [];
         docSnap.forEach((element: any) => {
-            let newData: any  = {
-              id: element.id,
-              data: element.data()
-            };
-        temp.push(newData);
+          let newData: any = {
+            id: element.id,
+            data: element.data(),
+          };
+          temp.push(newData);
         });
         console.log(temp);
         setMessageList(temp);
@@ -70,7 +70,7 @@ export default function Messages() {
     // Stop listening for updates when no longer required
     return () => subscriber();
   }, [currentUid]);
-  const renderUser = ({ item }: any) => {
+  const renderUser = ({item}: any) => {
     // var senderName: string = '';
     // var listVar: any = item.participants;
     // for (const property in listVar) {
@@ -82,23 +82,22 @@ export default function Messages() {
     //   }
     // }
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         activeOpacity={0.8}
         style={
-          // item == fakeMessage[0] 
-          // ? styles.userCardFirst 
-          // : item == fakeMessage[fakeMessage.length - 1] 
-          // ? styles.userCardLast 
+          // item == fakeMessage[0]
+          // ? styles.userCardFirst
+          // : item == fakeMessage[fakeMessage.length - 1]
+          // ? styles.userCardLast
           // : styles.userCard
           styles.userCard
         }
         onPress={() => {
           // setHeaderName(item.data.receiver.fname);
           setInboxID(item.data.msgID);
-          setMessageVisible(!messageVisible)
-        }}
-      >
-        <Image 
+          setMessageVisible(!messageVisible);
+        }}>
+        <Image
           source={require('../../assets/images/misaka.png')}
           style={styles.userImage}
         />
@@ -108,8 +107,8 @@ export default function Messages() {
         </View>
       </TouchableOpacity>
     );
-  } 
-  
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="black" />
@@ -117,31 +116,30 @@ export default function Messages() {
         <Text style={styles.headerTitle}>Messages</Text>
       </View>
       <View style={[styles.lowerSpace, {paddingTop: 20}]}>
-      <FlatList
-        data={messageList}
-        renderItem={renderUser}
-        keyExtractor={item => messageList.indexOf(item)}
-      />
+        <FlatList
+          data={messageList}
+          renderItem={renderUser}
+          keyExtractor={item => messageList.indexOf(item)}
+        />
       </View>
       <Modal
-          animationIn='fadeInUp'
-          animationOut='fadeOutDown'
-          style={{margin: 0}}
-          coverScreen={true}
-          isVisible={messageVisible}>
-          <View style={{flex: 1, backgroundColor: 'black'}}>
-            <View style={styles.upperBar}>
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => setMessageVisible(!messageVisible)}
-              >
-                <FontAwesomeIcon icon={faChevronLeft} color="white" size={20}/>
-              </TouchableOpacity>
-              <Text style={styles.headerTitle}>{headerName}</Text>
-            </View>
-            <Inbox iid={inboxID} />
+        animationIn="fadeInUp"
+        animationOut="fadeOutDown"
+        style={{margin: 0}}
+        coverScreen={true}
+        isVisible={messageVisible}>
+        <View style={{flex: 1, backgroundColor: 'black'}}>
+          <View style={styles.upperBar}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => setMessageVisible(!messageVisible)}>
+              <FontAwesomeIcon icon={faChevronLeft} color="white" size={20} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>{headerName}</Text>
           </View>
-        </Modal>
+          <Inbox iid={inboxID} />
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -149,36 +147,36 @@ export default function Messages() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
   },
   upperBar: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    padding: 20
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
   },
   headerTitle: {
-    fontSize: 32, 
-    fontWeight: 'bold', 
-    color: 'white'
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: 'white',
   },
   lowerSpace: {
     flex: 1,
-    paddingHorizontal: 20, 
+    paddingHorizontal: 20,
   },
   backButton: {
-    borderRadius: 10, 
-    borderColor: Grays.gray_2, 
+    borderRadius: 10,
+    borderColor: Grays.gray_2,
     width: 43,
     height: 43,
-    borderWidth: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 20,
   },
-  messageContainer:{
-   width: windowWidth - 30,
-   height: 'auto',
-   backgroundColor: inBlack.black_2
+  messageContainer: {
+    width: windowWidth - 30,
+    height: 'auto',
+    backgroundColor: inBlack.black_2,
   },
   userCard: {
     width: '100%',
@@ -212,17 +210,17 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 40,
-    marginHorizontal: 15
+    marginHorizontal: 15,
   },
   infoArea: {
-    flex: 1
+    flex: 1,
   },
   userName: {
-    color: 'white', 
-    fontSize: 18, 
+    color: 'white',
+    fontSize: 18,
   },
   userPreview: {
-    color: Grays.gray_1, 
-    fontSize: 18
+    color: Grays.gray_1,
+    fontSize: 18,
   },
 });

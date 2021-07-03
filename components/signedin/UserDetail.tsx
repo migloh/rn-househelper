@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, {useCallback, useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -6,23 +6,23 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
 } from 'react-native';
-import { AirbnbRating } from 'react-native-ratings';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { UserRoute, UserDetailProps } from '../Routes';
+import {AirbnbRating} from 'react-native-ratings';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faChevronLeft} from '@fortawesome/free-solid-svg-icons';
+import {UserRoute, UserDetailProps} from '../Routes';
 import Inbox from './Inbox';
-import { Blues, Grays, inBlack } from '../Colors';
-import { lorem } from './Profile';
+import {Blues, Grays, inBlack} from '../Colors';
+import {lorem} from './Profile';
 import Modal from 'react-native-modal';
 import firestore from '@react-native-firebase/firestore';
 import {toDate, ratingType} from './Profile';
-import auth from '@react-native-firebase/auth'; 
-import { GetName, FaireID } from '../../notgood/FonctionsUtiles';
+import auth from '@react-native-firebase/auth';
+import {GetName, FaireID} from '../../notgood/FonctionsUtiles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-var currentUserId: string|undefined = auth().currentUser?.uid;
+var currentUserId: string | undefined = auth().currentUser?.uid;
 
 export const InfoCard = ({title, detail, style}: any) => (
   <View style={{...style}}>
@@ -32,68 +32,86 @@ export const InfoCard = ({title, detail, style}: any) => (
 );
 
 export const boshi = (nums: Array<number>) => {
-    return nums.reduce((a, b) => (a + b)) / nums.length;
-}
+  return nums.reduce((a, b) => a + b) / nums.length;
+};
 
 export default function UserDetail({route, navigation}: UserDetailProps) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [ratingModal, setRatingModal] = useState<boolean>(false);
   const [ratingValue, setRatingValue] = useState<number>(0);
-  const [star, setStar] = useState<string|number>('');
+  const [star, setStar] = useState<string | number>('');
   const [availabilite, setAvailabilite] = useState<string>('');
   const [currentFName, setCurrentFName] = useState<string>();
   const [inboxID, setInboxID] = useState<string>();
   var passData = route.params.data;
   var passAddr = passData.address;
-  var guessID: string = route.params.id; 
+  var guessID: string = route.params.id;
   var guessName: string = passData.fname;
-  var guessRole : string= passData.role;
-  var guessGender: string = passData.gender.charAt(0).toUpperCase() + passData.gender.slice(1);
+  var guessRole: string = passData.role;
+  var guessGender: string =
+    passData.gender.charAt(0).toUpperCase() + passData.gender.slice(1);
   var guessDate: Date = toDate(passData.dob.seconds);
   var guessDescription: string = passData.description;
-  var guessAge: number = new Date().getFullYear() -  guessDate.getFullYear();
+  var guessAge: number = new Date().getFullYear() - guessDate.getFullYear();
   var guessPhone: string = passData.pnumber;
   var guessMail: string = passData.email;
-  var guessAddr: string = passAddr.homeNumber + ', ' 
-                              + passAddr.ward + ', ' 
-                              + passAddr.district + ', ' 
-                              + passAddr.province; 
+  var guessAddr: string =
+    passAddr.homeNumber +
+    ', ' +
+    passAddr.ward +
+    ', ' +
+    passAddr.district +
+    ', ' +
+    passAddr.province;
   // console.log(JSON.stringify(passData));
-  const ContactClick = async ( senderName: string|undefined, senderID: string|undefined, receiverName: string, receiverID: string ) => {
+  const ContactClick = async (
+    senderName: string | undefined,
+    senderID: string | undefined,
+    receiverName: string,
+    receiverID: string,
+  ) => {
     try {
-      var messageQuery = firestore().collection('users1').doc(currentUserId).collection('messages').doc(receiverID);
-      var getQuery = await messageQuery.get()
+      var messageQuery = firestore()
+        .collection('users1')
+        .doc(currentUserId)
+        .collection('messages')
+        .doc(receiverID);
+      var getQuery = await messageQuery.get();
       if (!getQuery.exists) {
-    let newMessageID: string = FaireID();
+        let newMessageID: string = FaireID();
         await messageQuery.set({
           msgID: newMessageID,
           lastestMessage: '',
           lastestDate: new Date(),
           receiver: {
             fname: receiverName,
-            id: receiverID
-          } 
+            id: receiverID,
+          },
         });
-        await firestore().collection('users1').doc(receiverID).collection('messages').doc(currentUserId).set({
-          msgID: newMessageID,
-          lastestMessage: '',
-          lastestDate: new Date(),
-          receiver: {
-            fname: senderName,
-            id: senderID 
-          } 
-        })
-      setInboxID(newMessageID);
-      }
-      else {
+        await firestore()
+          .collection('users1')
+          .doc(receiverID)
+          .collection('messages')
+          .doc(currentUserId)
+          .set({
+            msgID: newMessageID,
+            lastestMessage: '',
+            lastestDate: new Date(),
+            receiver: {
+              fname: senderName,
+              id: senderID,
+            },
+          });
+        setInboxID(newMessageID);
+      } else {
         setInboxID(getQuery.data()?.msgID);
       }
-      setModalVisible(!modalVisible)
+      setModalVisible(!modalVisible);
     } catch (e) {
       console.log('Message no koto: ', e.message);
     }
-    };
-  
+  };
+
   // useEffect(() => {
   //   const toConsole = async() => {
   //     var refSender = firestore()
@@ -115,11 +133,11 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
     const fetchEmployee = async () => {
       var employeeRef = firestore().collection('employees1').doc(guessID);
       var employeeInfo = await employeeRef.get();
-      if (!employeeInfo.exists){
+      if (!employeeInfo.exists) {
         console.log('Ne trouve pas les informations');
       } else {
         let res = employeeInfo.data();
-        if(res !== undefined) {
+        if (res !== undefined) {
           setAvailabilite(res.availability);
         }
       }
@@ -130,46 +148,49 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
     const getData = async () => {
       try {
         const value = await AsyncStorage.getItem('userName');
-        if(value !== null) {
+        if (value !== null) {
           // value previously stored
           console.log(value);
           setCurrentFName(value);
         }
-      } catch(e) {
+      } catch (e) {
         // error reading value
         console.log(e.message);
       }
-    }
+    };
     getData();
   }, []);
 
   useEffect(() => {
     const getRating = async () => {
       try {
-        var ratingRef = firestore().collection('employees1').doc(guessID).collection('rating'); 
+        var ratingRef = firestore()
+          .collection('employees1')
+          .doc(guessID)
+          .collection('rating');
         var rateTotal = await ratingRef.get();
         var userRate = await ratingRef.doc(currentUserId).get();
-        if(rateTotal.empty) setStar('N/A')
+        if (rateTotal.empty) setStar('N/A');
         else {
           var boshiArray: Array<number> = [];
           rateTotal.forEach(doc => {
             boshiArray.push(doc.data()?.rating);
             console.log(doc.data());
           });
-          setStar(boshi(boshiArray))
+          setStar(boshi(boshiArray));
         }
-        if(userRate.exists) setRatingValue(userRate.data()?.rating);
+        if (userRate.exists) setRatingValue(userRate.data()?.rating);
         else setRatingValue(0);
       } catch (error) {
-        console.log('gerRating Error: ', error.message); 
+        console.log('gerRating Error: ', error.message);
       }
     };
     getRating();
-  }, [])
+  }, []);
 
   const onRatingClick = async (rateNum: number) => {
     try {
-      if(rateNum == 0) setRatingModal(!ratingModal);
+      if (rateNum == 0) setRatingModal(!ratingModal);
       else {
         await firestore()
           .collection('employees1')
@@ -179,14 +200,14 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
           .set({
             rating: rateNum,
             rateDate: new Date(),
-            raterID: currentUserId
+            raterID: currentUserId,
           });
         setRatingModal(!ratingModal);
       }
     } catch (error) {
-      console.log('onratingClick error: ', error.message); 
-    } 
-  }
+      console.log('onratingClick error: ', error.message);
+    }
+  };
 
   const onDeleteClick = async () => {
     try {
@@ -196,30 +217,29 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
         .collection('rating')
         .doc(currentUserId)
         .get();
-      if(!userRate.exists) setRatingModal(!ratingModal);
+      if (!userRate.exists) setRatingModal(!ratingModal);
       else {
         await firestore()
           .collection('employees1')
           .doc(guessID)
           .collection('rating')
           .doc(currentUserId)
-        .delete();
+          .delete();
         setRatingValue(0);
         setRatingModal(!ratingModal);
       }
     } catch (error) {
-      console.log('onDeleteClick error: ', error.message); 
+      console.log('onDeleteClick error: ', error.message);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.upperBar}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <FontAwesomeIcon icon={faChevronLeft} color="white" size={20}/>
+          onPress={() => navigation.goBack()}>
+          <FontAwesomeIcon icon={faChevronLeft} color="white" size={20} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Details</Text>
       </View>
@@ -231,78 +251,93 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
               style={styles.userImage}
             />
             <View style={styles.infoCol}>
-              <Text style={[styles.headerTitle, {fontSize: 30}]}>{guessName}</Text>
+              <Text style={[styles.headerTitle, {fontSize: 30}]}>
+                {guessName}
+              </Text>
               <View style={styles.userStatusBorder}>
                 <Text style={styles.userRole}>{guessRole}</Text>
               </View>
               <View style={styles.optionButtons}>
                 <TouchableOpacity
                   style={styles.actionButton}
-                  onPress={() => ContactClick(currentFName, currentUserId, guessName, guessID)}
-                >
+                  onPress={() =>
+                    ContactClick(
+                      currentFName,
+                      currentUserId,
+                      guessName,
+                      guessID,
+                    )
+                  }>
                   <Text style={styles.actionText}>Contact</Text>
                 </TouchableOpacity>
                 <View style={{width: 20, height: 'auto'}} />
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.actionButton}
-                  onPress={() => setRatingModal(!ratingModal)}
-                >
+                  onPress={() => setRatingModal(!ratingModal)}>
                   <Text style={styles.actionText}>Rate</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
-          {
-            guessRole == 'Employee'
-            ? (
-              <View style={styles.outterBasicInfo}>
-                <View style={styles.basicInfo}>
-                  <Text style={styles.basicTitle}>Average Rating</Text>
-                  <Text style={styles.basicDetail}>{star}{
-                    typeof(star) == 'number'
-                    ? '/5'
-                    : null
-                  }</Text>
-                </View>
-                <View style={styles.basicInfo}>
-                  <Text style={styles.basicTitle}>Availability</Text>
-                  <Text style={styles.basicDetail}>{availabilite}</Text>
-                </View>
+          {guessRole == 'Employee' ? (
+            <View style={styles.outterBasicInfo}>
+              <View style={styles.basicInfo}>
+                <Text style={styles.basicTitle}>Average Rating</Text>
+                <Text style={styles.basicDetail}>
+                  {star}
+                  {typeof star == 'number' ? '/5' : null}
+                </Text>
               </View>
-            )
-            : null
-          }
+              <View style={styles.basicInfo}>
+                <Text style={styles.basicTitle}>Availability</Text>
+                <Text style={styles.basicDetail}>{availabilite}</Text>
+              </View>
+            </View>
+          ) : null}
           <View style={styles.selfIntro}>
             <Text style={styles.selfIntroTitle}>Self Introduction</Text>
-            <Text style={styles.selfIntroContent}>{
-              guessDescription == ''
-              ? 'Nothing to display'
-              : guessDescription
-            }</Text>
+            <Text style={styles.selfIntroContent}>
+              {guessDescription == '' ? 'Nothing to display' : guessDescription}
+            </Text>
           </View>
           <View style={[styles.selfIntro, {marginBottom: 30}]}>
             <View style={{flexDirection: 'row'}}>
-              <InfoCard style={styles.infoCard} title="Sex" detail={guessGender} />
+              <InfoCard
+                style={styles.infoCard}
+                title="Sex"
+                detail={guessGender}
+              />
               <View style={{width: '40%', height: 'auto'}} />
               <InfoCard style={styles.infoCard} title="Age" detail={guessAge} />
             </View>
-            <InfoCard style={styles.infoCard} title="Phone Number" detail={guessPhone} />
-            <InfoCard style={styles.infoCard} title="Email" detail={guessMail} />
-            <InfoCard style={styles.infoCard} title="Address" detail={guessAddr} />
+            <InfoCard
+              style={styles.infoCard}
+              title="Phone Number"
+              detail={guessPhone}
+            />
+            <InfoCard
+              style={styles.infoCard}
+              title="Email"
+              detail={guessMail}
+            />
+            <InfoCard
+              style={styles.infoCard}
+              title="Address"
+              detail={guessAddr}
+            />
           </View>
         </ScrollView>
         <Modal
-          animationIn='fadeInUp'
-          animationOut='fadeOutDown'
+          animationIn="fadeInUp"
+          animationOut="fadeOutDown"
           style={{margin: 0}}
           isVisible={modalVisible}>
           <View style={{flex: 1, backgroundColor: 'black'}}>
             <View style={styles.upperBar}>
               <TouchableOpacity
                 style={styles.backButton}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <FontAwesomeIcon icon={faChevronLeft} color="white" size={20}/>
+                onPress={() => setModalVisible(!modalVisible)}>
+                <FontAwesomeIcon icon={faChevronLeft} color="white" size={20} />
               </TouchableOpacity>
               <Text style={styles.headerTitle}>{GetName(guessName)}</Text>
             </View>
@@ -312,18 +347,17 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
         <Modal
           isVisible={ratingModal}
           style={{alignSelf: 'center'}}
-          animationIn='fadeIn'
-          animationOut='fadeOut'
-        >
+          animationIn="fadeIn"
+          animationOut="fadeOut">
           <View style={styles.ratingModal}>
             <Text style={styles.inRatingText}>Your rating</Text>
             <AirbnbRating
               count={5}
-              reviews={["Terrible", "Bad", "OK", "Good", "Very Good"]}
+              reviews={['Terrible', 'Bad', 'OK', 'Good', 'Very Good']}
               defaultRating={ratingValue}
               selectedColor={Blues.blue_1}
               reviewColor={Blues.blue_1}
-              onFinishRating={(val) => setRatingValue(val)}
+              onFinishRating={val => setRatingValue(val)}
               size={30}
               starContainerStyle={{marginBottom: 40}}
               ratingContainerStyle={{marginTop: 30}}
@@ -331,8 +365,7 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
             <TouchableOpacity
               style={[styles.actionRating, {backgroundColor: Blues.blue_2}]}
               // onPress={() => setRatingModal(!ratingModal)}
-              onPress={() => onRatingClick(ratingValue)}
-            >
+              onPress={() => onRatingClick(ratingValue)}>
               <Text style={styles.ratingText}>OK</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -343,8 +376,7 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
               //     setRatingValue(0);
               //   }, [])
               // }
-              onPress={() => onDeleteClick()}
-            >
+              onPress={() => onDeleteClick()}>
               <Text style={styles.ratingText}>Delete rating</Text>
             </TouchableOpacity>
           </View>
@@ -352,71 +384,71 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
   },
   upperBar: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    padding: 20
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
   },
   backButton: {
-    borderRadius: 10, 
-    borderColor: Grays.gray_2, 
+    borderRadius: 10,
+    borderColor: Grays.gray_2,
     width: 43,
     height: 43,
-    borderWidth: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 20,
   },
   headerTitle: {
-    fontSize: 32, 
-    fontWeight: 'bold', 
-    color: 'white'
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: 'white',
   },
   lowerSpace: {
     flex: 1,
-    paddingHorizontal: 20, 
+    paddingHorizontal: 20,
   },
   scrollableContent: {
     paddingTop: 20,
   },
   overallInfo: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 30,
   },
   userImage: {
-    width: 90, 
-    height: 90, 
-    borderRadius: 45, 
-    marginRight: 20
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    marginRight: 20,
   },
   infoCol: {
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
   userRole: {
-    color: 'white', 
-    fontWeight: 'bold'
+    color: 'white',
+    fontWeight: 'bold',
   },
   userStatusBorder: {
-    borderWidth: 2, 
-    borderColor: Blues.blue_1, 
-    borderRadius: 10, 
-    paddingVertical: 2, 
-    paddingHorizontal: 5, 
-    alignItems: 'center', 
+    borderWidth: 2,
+    borderColor: Blues.blue_1,
+    borderRadius: 10,
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+    alignItems: 'center',
     marginTop: 5,
-    marginBottom: 10
+    marginBottom: 10,
   },
   optionButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   actionButton: {
     width: 85,
@@ -424,17 +456,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: inBlack.black_2,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   actionText: {
     color: 'white',
-    fontSize: 16
+    fontSize: 16,
   },
   outterBasicInfo: {
     width: '100%',
     height: 'auto',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   basicInfo: {
     width: '45%',
@@ -443,16 +475,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 15,
-    paddingVertical: 10
+    paddingVertical: 10,
   },
   basicTitle: {
     fontSize: 18,
-    color: Grays.gray_1
+    color: Grays.gray_1,
   },
   basicDetail: {
     fontSize: 25,
     fontWeight: 'bold',
-    color: 'white'
+    color: 'white',
   },
   selfIntro: {
     width: '100%',
@@ -462,33 +494,33 @@ const styles = StyleSheet.create({
     backgroundColor: inBlack.black_2,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginTop: 30
+    marginTop: 30,
   },
   selfIntroTitle: {
     color: Grays.gray_1,
-    fontSize: 18
+    fontSize: 18,
   },
   selfIntroContent: {
     color: 'white',
-    fontSize: 16
+    fontSize: 16,
   },
   infoCard: {
-    marginBottom: 10
+    marginBottom: 10,
   },
   ratingModal: {
-    backgroundColor: Grays.gray_4 , 
-    alignItems: 'center', 
-    borderRadius: 15, 
-    paddingVertical: 30, 
-    paddingHorizontal: 20
+    backgroundColor: Grays.gray_4,
+    alignItems: 'center',
+    borderRadius: 15,
+    paddingVertical: 30,
+    paddingHorizontal: 20,
   },
   inRatingText: {
-    color: 'white', 
-    fontWeight: 'bold', 
-    fontSize: 30
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 30,
   },
   actionRating: {
-    width: 250, 
+    width: 250,
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
@@ -496,8 +528,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   ratingText: {
-    fontSize: 20, 
+    fontSize: 20,
     color: 'white',
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 });
