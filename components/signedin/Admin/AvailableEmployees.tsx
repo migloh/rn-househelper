@@ -57,7 +57,7 @@ export default function AvailableUsers({
       try {
         var query = await firestore()
           .collection('users1')
-          .where('role', '==', 'Employer')
+          .where('role', '==', 'Employee')
           .get();
         if (!query.empty) {
           var tempData: responseType = [];
@@ -83,7 +83,7 @@ export default function AvailableUsers({
     <View style={styles.container}>
       <StatusBar backgroundColor="black" />
       <View style={styles.upperBar}>
-        <Text style={styles.headerTitle}>Employers</Text>
+        <Text style={styles.headerTitle}>Employees</Text>
       </View>
       <View style={styles.lowerSpace}>
         <FlatList

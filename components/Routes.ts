@@ -14,6 +14,7 @@ export enum EnumTabs {
 
 export enum AdminTabs {
   UserStack = "UserStack",
+  EmployeeStack = "EmployeeStack",
   Profile = "Profile"
 };
 
@@ -26,6 +27,7 @@ export type BottomTabParamList = {
 
 export type AdminTabParamList = {
   [AdminTabs.UserStack]: undefined;
+  [AdminTabs.EmployeeStack]: undefined;
   [AdminTabs.Profile]: undefined
 };
 
@@ -66,6 +68,11 @@ export enum AdminRoute {
   AvailableUserDetail = "AvailableUserDetail"
 };
 
+export enum EmployeeRoute {
+  AvailableEmployees = "AvailableEmployees",
+  AvailableUserDetail = "AvailableUserDetail"
+};
+
 export type AppStackParamList = {
   [AppRoutes.LoadingScreen]: undefined,
   [AppRoutes.AuthScreens]: undefined,
@@ -95,6 +102,11 @@ export type AdminStackParamList = {
   [AdminRoute.AvailableUserDetail]: FirebaseFirestoreTypes.DocumentData
 };
 
+export type EmployeeStackParamList = {
+  [EmployeeRoute.AvailableEmployees]: undefined,
+  [EmployeeRoute.AvailableUserDetail]: FirebaseFirestoreTypes.DocumentData
+};
+
 type LoadingScreenRouteProp = RouteProp<AppStackParamList, AppRoutes.LoadingScreen>;
 type AuthScreensRouteProp = RouteProp<AppStackParamList, AppRoutes.AuthScreens>;
 type HomeScreenRouteProp = RouteProp<AppStackParamList, AppRoutes.Home>;
@@ -113,6 +125,9 @@ type LocationsDetailScreenRouteProp = RouteProp<LocationsStackParamList, Locatio
 
 type AvailableUsersScreenRouteProp = RouteProp<AdminStackParamList, AdminRoute.AvailableUsers>;
 type AvailableUserDetailScreenRouteProp = RouteProp<AdminStackParamList, AdminRoute.AvailableUserDetail>;
+
+type AvailableEmployeesScreenRouteProp = RouteProp<EmployeeStackParamList, EmployeeRoute.AvailableEmployees>;
+type AvailableEmployeeDetailScreenRouteProp = RouteProp<EmployeeStackParamList, EmployeeRoute.AvailableUserDetail>;
 
 type LoadingScreenNavigationProp = StackNavigationProp<
   AppStackParamList,
@@ -175,6 +190,15 @@ type AvailableUserDetailScreenNavigationProp = StackNavigationProp<
   AdminRoute.AvailableUserDetail
 >;
 
+type AvailableEmployeesScreenNavigationProp = StackNavigationProp<
+  EmployeeStackParamList,
+  EmployeeRoute.AvailableEmployees
+>;
+type AvailableEmployeeDetailScreenNavigationProp = StackNavigationProp<
+  EmployeeStackParamList,
+  EmployeeRoute.AvailableUserDetail
+>;
+
 export type LoadingScreenProps = {
   route: LoadingScreenRouteProp;
   navigation: LoadingScreenNavigationProp;
@@ -231,8 +255,16 @@ export type AvailableUsersProps = {
   route: AvailableUsersScreenRouteProp;
   navigation: AvailableUsersScreenNavigationProp
 };
-
 export type AvailableUserDetailProps = {
   route: AvailableUserDetailScreenRouteProp;
   navigation: AvailableUserDetailScreenNavigationProp
+};
+
+export type AvailableEmployeesProps = {
+  route: AvailableEmployeesScreenRouteProp;
+  navigation: AvailableEmployeesScreenNavigationProp
+};
+export type AvailableEmployeeDetailProps = {
+  route: AvailableEmployeeDetailScreenRouteProp;
+  navigation: AvailableEmployeeDetailScreenNavigationProp
 };

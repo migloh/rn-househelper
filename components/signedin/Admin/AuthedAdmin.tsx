@@ -1,15 +1,21 @@
 import React from 'react';
 import AdminUserList from './AdminUserList';
 import AdminListStack from './AdminListStack';
+import EmployeeListStack from './EmployeeListStack';
 import Profile from '../Profile';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import { AdminTabs, AdminTabParamList } from '../../Routes';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faMapMarkerAlt, faUserFriends, faCommentAlt, faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import {AdminTabs, AdminTabParamList} from '../../Routes';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {
+  faMapMarkerAlt,
+  faUserFriends,
+  faCommentAlt,
+  faUserCircle,
+} from '@fortawesome/free-solid-svg-icons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { Grays, inBlack } from '../../Colors';
+import {Grays, inBlack} from '../../Colors';
 
-const Tabs = createBottomTabNavigator<AdminTabParamList>(); 
+const Tabs = createBottomTabNavigator<AdminTabParamList>();
 
 export default function Home() {
   return (
@@ -24,28 +30,34 @@ export default function Home() {
           height: 57,
           elevation: 0,
         },
-      }}
-    >
-      <Tabs.Screen 
+      }}>
+      <Tabs.Screen
         options={{
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name='user' size={25} color={color} />
+          tabBarIcon: ({color}) => (
+            <FontAwesome5 name="users" size={25} color={color} />
           ),
         }}
-        name={AdminTabs.UserStack} 
-        component={AdminListStack} 
-        initialParams={{tabRole: 'Employer'}}
+        name={AdminTabs.UserStack}
+        component={AdminListStack}
       />
-      <Tabs.Screen 
+      <Tabs.Screen
         options={{
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name='user-circle' size={25} color={color} />
+          tabBarIcon: ({color}) => (
+            <FontAwesome5 name="hand-sparkles" size={25} color={color} />
           ),
         }}
-        name={AdminTabs.Profile} 
-        component={Profile} 
+        name={AdminTabs.EmployeeStack}
+        component={EmployeeListStack}
+      />
+      <Tabs.Screen
+        options={{
+          tabBarIcon: ({color}) => (
+            <FontAwesome5 name="user-circle" size={25} color={color} />
+          ),
+        }}
+        name={AdminTabs.Profile}
+        component={Profile}
       />
     </Tabs.Navigator>
   );
-};
-
+}

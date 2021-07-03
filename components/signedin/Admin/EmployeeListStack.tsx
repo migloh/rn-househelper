@@ -1,27 +1,27 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {AdminRoute, AdminStackParamList} from '../../Routes';
-import AvailableUsers from './AvailableUsers';
+import {EmployeeRoute, EmployeeStackParamList} from '../../Routes';
+import AvailableEmployees from './AvailableEmployees';
 import AvailableUserDetail from './AvailableUserDetail';
 
-const Stack = createStackNavigator<AdminStackParamList>();
+const Stack = createStackNavigator<EmployeeStackParamList>();
 
 type AdminRoleType = {
   role: string;
 };
 
-export default function AdminListStack({role}: AdminRoleType) {
+export default function EmployeeListStack({role}: AdminRoleType) {
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
       }}>
       <Stack.Screen
-        name={AdminRoute.AvailableUsers}
-        component={AvailableUsers}
+        name={EmployeeRoute.AvailableEmployees}
+        component={AvailableEmployees}
       />
       <Stack.Screen
-        name={AdminRoute.AvailableUserDetail}
+        name={EmployeeRoute.AvailableUserDetail}
         component={AvailableUserDetail}
       />
     </Stack.Navigator>
