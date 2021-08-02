@@ -46,7 +46,8 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
   var passData = route.params.data;
   var passAddr = passData.address;
   var guessID: string = route.params.id;
-  var guessName: string = passData.fname;
+  var guessFName: string = passData.firstName;
+  var guessLName: string = passData.lastName;
   var guessRole: string = passData.role;
   var guessGender: string =
     passData.gender.charAt(0).toUpperCase() + passData.gender.slice(1);
@@ -247,12 +248,12 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
         <ScrollView style={styles.scrollableContent}>
           <View style={styles.overallInfo}>
             <Image
-              source={require('../../assets/images/misaka.png')}
+              source={require('../../assets/images/userimg.png')}
               style={styles.userImage}
             />
             <View style={styles.infoCol}>
               <Text style={[styles.headerTitle, {fontSize: 30}]}>
-                {guessName}
+                {guessLName + ' ' + guessFName}
               </Text>
               <View style={styles.userStatusBorder}>
                 <Text style={styles.userRole}>{guessRole}</Text>
@@ -264,7 +265,7 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
                     ContactClick(
                       currentFName,
                       currentUserId,
-                      guessName,
+                      guessLName + ' ' + guessFName,
                       guessID,
                     )
                   }>
@@ -339,7 +340,7 @@ export default function UserDetail({route, navigation}: UserDetailProps) {
                 onPress={() => setModalVisible(!modalVisible)}>
                 <FontAwesomeIcon icon={faChevronLeft} color="white" size={20} />
               </TouchableOpacity>
-              <Text style={styles.headerTitle}>{GetName(guessName)}</Text>
+              <Text style={styles.headerTitle}>{GetName(guessFName)}</Text>
             </View>
             <Inbox iid={inboxID} />
           </View>

@@ -98,7 +98,7 @@ export default function Messages() {
           setMessageVisible(!messageVisible);
         }}>
         <Image
-          source={require('../../assets/images/misaka.png')}
+          source={require('../../assets/images/userimg.png')}
           style={styles.userImage}
         />
         <View style={styles.infoArea}>

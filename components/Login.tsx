@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,14 +8,18 @@ import {
   ActivityIndicator,
   Alert,
   StatusBar,
-  ScrollView
+  ScrollView,
 } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import Modal from 'react-native-modal';
-import { faCoffee,faChevronLeft, faAppleAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCoffee,
+  faChevronLeft,
+  faAppleAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import {Blues, Grays} from './Colors';
 import {LoginProps, AuthRoutes} from './Routes';
-import auth from '@react-native-firebase/auth'; 
+import auth from '@react-native-firebase/auth';
 import {AuthContext} from './context';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import firestore from '@react-native-firebase/firestore';
@@ -33,7 +37,7 @@ export default function Login({route, navigation}: LoginProps) {
 
   const storeID = async (value: string) => {
     try {
-      await AsyncStorage.setItem('currentID', value)
+      await AsyncStorage.setItem('currentID', value);
       storeRole(value);
     } catch (e) {
       // saving error
@@ -41,27 +45,28 @@ export default function Login({route, navigation}: LoginProps) {
     }
   };
 
-  const storeRole = async (eeID: string|undefined) => {
+  const storeRole = async (eeID: string | undefined) => {
     var userRef = firestore().collection('users1').doc(eeID);
     var userInfo = await userRef.get();
-    if (!userInfo.exists){
+    if (!userInfo.exists) {
       console.log('Ne trouve pas les informations');
     } else {
       let res = userInfo.data();
-      if(res !== undefined) {
+      if (res !== undefined) {
         if (res.role == 'Admin') {
           if (signInAdmin) signInAdmin();
-        }
-        else {
+        } else {
           if (signIn) signIn();
         }
         await AsyncStorage.setItem('userRole', res.role)
-        .then(() => console.log('yeeee set duoc roi'))
-        .catch(e => console.log(e.message));
-        await AsyncStorage.setItem('userName', res.fname)
-        .catch(e => console.log(e.message));
-        if(res.role == 'Admin') {
-          if(signInAdmin) signInAdmin();
+          .then(() => console.log('yeeee set duoc roi'))
+          .catch(e => console.log(e.message));
+        await AsyncStorage.setItem(
+          'userName',
+          res.lastName + ' ' + res.firstName,
+        ).catch(e => console.log(e.message));
+        if (res.role == 'Admin') {
+          if (signInAdmin) signInAdmin();
         }
       }
     }
@@ -69,10 +74,7 @@ export default function Login({route, navigation}: LoginProps) {
 
   const __doSignIn = async (lmeo: string, pwd: string) => {
     try {
-      let response = await auth().signInWithEmailAndPassword(
-        lmeo,
-        pwd
-        )
+      let response = await auth().signInWithEmailAndPassword(lmeo, pwd);
       if (response && response.user) {
         console.log(response.user.uid);
         storeID(response.user.uid);
@@ -80,9 +82,9 @@ export default function Login({route, navigation}: LoginProps) {
       }
     } catch (e) {
       setLoading(false);
-      Alert.alert("Warning", e.message);
+      Alert.alert('Warning', e.message);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -90,9 +92,8 @@ export default function Login({route, navigation}: LoginProps) {
       <View style={styles.upperBar}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <FontAwesomeIcon icon={faChevronLeft} color="white" size={20}/>
+          onPress={() => navigation.goBack()}>
+          <FontAwesomeIcon icon={faChevronLeft} color="white" size={20} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Login</Text>
       </View>
@@ -110,37 +111,44 @@ export default function Login({route, navigation}: LoginProps) {
           <View style={styles.lowerLine}>
             <Text style={{color: Grays.gray_0}}>Don't have an account?</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate(AuthRoutes.Signup)}
-            >
+              onPress={() => navigation.navigate(AuthRoutes.Signup)}>
               <Text style={styles.actionText}> Sign up</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.inputTitle}>Email</Text>
-          <View style={[styles.inputArea, {borderColor: inputBorder1 == true ? Blues.blue_2 : Grays.gray_2 }]}>
-            <TextInput 
+          <View
+            style={[
+              styles.inputArea,
+              {borderColor: inputBorder1 == true ? Blues.blue_2 : Grays.gray_2},
+            ]}>
+            <TextInput
               style={styles.textInput}
-              placeholder= "tim@apple.com"
+              placeholder="tim@apple.com"
               onFocus={() => setInputBorder1(true)}
               onBlur={() => setInputBorder1(false)}
               onSubmitEditing={() => passInputRef.current?.focus()}
               returnKeyType="next"
               blurOnSubmit={false}
               placeholderTextColor={Grays.gray_0}
-              autoCapitalize='none'
+              autoCapitalize="none"
               value={mail}
               onChangeText={setMail}
             />
           </View>
           <Text style={styles.inputTitle}>Password</Text>
-          <View style={[styles.inputArea, {borderColor: inputBorder2 == true ? Blues.blue_2 : Grays.gray_2 }]}>
-            <TextInput 
+          <View
+            style={[
+              styles.inputArea,
+              {borderColor: inputBorder2 == true ? Blues.blue_2 : Grays.gray_2},
+            ]}>
+            <TextInput
               style={styles.textInput}
-              placeholder= "Enter your password"
+              placeholder="Enter your password"
               ref={passInputRef}
               onFocus={() => setInputBorder2(true)}
               onBlur={() => setInputBorder2(false)}
               placeholderTextColor={Grays.gray_0}
-              autoCapitalize='none'
+              autoCapitalize="none"
               value={pass}
               onChangeText={setPass}
               secureTextEntry={true}
@@ -150,21 +158,22 @@ export default function Login({route, navigation}: LoginProps) {
             style={styles.button}
             disabled={loading}
             onPress={() => {
-              if(mail === '' || pass === '') Alert.alert("Warning", "Empty string")
-              else __doSignIn(mail, pass)
-            }}
-          >
-            {
-              loading 
-              ? <View><ActivityIndicator size='small' color={Blues.blue_0} /></View> 
-              : <Text style={styles.buttonText}>Log in</Text>
-            }
+              if (mail === '' || pass === '')
+                Alert.alert('Warning', 'Empty string');
+              else __doSignIn(mail, pass);
+            }}>
+            {loading ? (
+              <View>
+                <ActivityIndicator size="small" color={Blues.blue_0} />
+              </View>
+            ) : (
+              <Text style={styles.buttonText}>Log in</Text>
+            )}
           </TouchableOpacity>
           <View style={styles.lowerLine}>
             <Text style={{color: Grays.gray_0}}>Forgot password?</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate(AuthRoutes.Recovery)}
-            >
+              onPress={() => navigation.navigate(AuthRoutes.Recovery)}>
               <Text style={styles.actionText}> Password recovery</Text>
             </TouchableOpacity>
           </View>
@@ -172,100 +181,100 @@ export default function Login({route, navigation}: LoginProps) {
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
   },
   upperBar: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    padding: 20
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
   },
   backButton: {
-    borderRadius: 10, 
-    borderColor: Grays.gray_2, 
+    borderRadius: 10,
+    borderColor: Grays.gray_2,
     width: 43,
     height: 43,
-    borderWidth: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 20,
   },
   headerTitle: {
-    fontSize: 32, 
-    fontWeight: 'bold', 
-    color: 'white'
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: 'white',
   },
   lowerSpace: {
     flex: 1,
-    paddingHorizontal: 20, 
+    paddingHorizontal: 20,
   },
   scrollableContent: {
-    paddingTop: 20
+    paddingTop: 20,
   },
   signinOptions: {
-    width: "100%", 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    marginTop: 15, 
-    marginBottom: 15
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 15,
+    marginBottom: 15,
   },
   signinOptionButton: {
     borderWidth: 1,
     borderRadius: 15,
     borderColor: Grays.gray_2,
-    width: "47%",
+    width: '47%',
     height: 65,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Grays.gray_button
+    backgroundColor: Grays.gray_button,
   },
   inputTitle: {
     color: 'white',
-    marginLeft: 10
+    marginLeft: 10,
   },
   textInput: {
     color: 'white',
-    width: "100%"
+    width: '100%',
   },
   inputArea: {
     borderWidth: 1,
     borderRadius: 15,
     marginTop: 5,
     marginBottom: 20,
-    width: "100%",
+    width: '100%',
     height: 60,
     borderColor: Grays.gray_2,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-    backgroundColor: Grays.gray_button
+    backgroundColor: Grays.gray_button,
   },
   button: {
-    width: "100%",
+    width: '100%',
     height: 60,
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Blues.blue_1,
-    marginVertical: 10
+    marginVertical: 10,
   },
-  buttonText: { 
+  buttonText: {
     fontSize: 16,
-    color: 'white',  
-    fontWeight: 'bold'
+    color: 'white',
+    fontWeight: 'bold',
   },
   lowerLine: {
     marginTop: 5,
     flexDirection: 'row',
     alignSelf: 'center',
-    marginBottom: 20
+    marginBottom: 20,
   },
   actionText: {
     color: 'white',
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 });

@@ -36,7 +36,7 @@ export default function AvailableuserDetail({
   var passData = route.params.data;
   var passAddr = passData.address;
   var guessID: string = route.params.id;
-  var guessName: string = passData.fname;
+  var guessName: string = passData.lastName + ' ' + passData.firstName;
   var guessRole: string = passData.role;
   var guessGender: string =
     passData.gender.charAt(0).toUpperCase() + passData.gender.slice(1);
@@ -120,7 +120,7 @@ export default function AvailableuserDetail({
         <ScrollView style={styles.scrollableContent}>
           <View style={styles.overallInfo}>
             <Image
-              source={require('../../../assets/images/misaka.png')}
+              source={require('../../../assets/images/userimg.png')}
               style={styles.userImage}
             />
             <View style={styles.infoCol}>

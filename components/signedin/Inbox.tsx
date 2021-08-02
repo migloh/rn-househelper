@@ -17,6 +17,7 @@ import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import {toDate} from '../../notgood/FonctionsUtiles';
 import {responseType} from './UsersList';
 
 var currentUid: string | undefined = auth().currentUser?.uid;
@@ -35,9 +36,9 @@ const Transmit = ({item}: any) => (
       onLongPress={() =>
         Alert.alert(
           'Timestamp',
-          JSON.stringify(item.data.createdAt) +
-            '\nsender: ' +
-            JSON.stringify(item.data.senderID),
+          toDate(item.data.createdAt.seconds) +
+            '\n\nSender ID: ' +
+            item.data.senderID,
         )
       }
       style={
@@ -128,7 +129,7 @@ export default function Inbox({iid}: inboxType) {
       <View style={styles.messageBar}>
         <TextInput
           style={styles.messageInput}
-          placeholder="Votre message..."
+          placeholder="Your message..."
           placeholderTextColor={Grays.gray_1}
           multiline={true}
           value={text}
